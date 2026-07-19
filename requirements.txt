@@ -25,3 +25,4 @@ flask-bcrypt==1.0.1
 flask-babel==4.0.0
 flask-debugtoolbar==0.15.0
 flask-assets==2.1.0
+boto==2.49.0
