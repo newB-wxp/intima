@@ -1,0 +1,42 @@
+{# components/footer.html - 4-Column Footer #}
+<footer class="footer" role="contentinfo">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h3 class="footer-col-title">Shop</h3>
+      <a href="{{ url_for('website.shop') }}">All Products</a>
+      <a href="{{ url_for('website.shop', sort='newest') }}">New Arrivals</a>
+      <a href="{{ url_for('website.shop', sort='bestsellers') }}">Best Sellers</a>
+      <a href="{{ url_for('website.gift_cards') }}">Gift Cards</a>
+    </div>
+
+    <div class="footer-col">
+      <h3 class="footer-col-title">Support</h3>
+      <a href="{{ url_for('website.contact') }}">Contact Us</a>
+      <a href="{{ url_for('website.faq') }}">FAQ</a>
+      <a href="{{ url_for('website.shipping') }}">Shipping Info</a>
+      <a href="{{ url_for('website.returns') }}">Returns</a>
+    </div>
+
+    <div class="footer-col">
+      <h3 class="footer-col-title">About</h3>
+      <a href="{{ url_for('website.about') }}">Our Story</a>
+      <a href="{{ url_for('website.blog_list') }}">Blog</a>
+      <a href="{{ url_for('website.privacy') }}">Privacy Policy</a>
+      <a href="{{ url_for('website.terms') }}">Terms of Service</a>
+    </div>
+
+    <div class="footer-col">
+      <h3 class="footer-col-title">Legal</h3>
+      <p style="color: var(--color-text-muted); font-size: 0.875rem; line-height: 1.7;">
+        All models 18+. Discreet packaging.<br>
+        Body-safe materials.<br>
+        &copy; {{ now().year if now else '2026' }} Intima Wellness.
+      </p>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; {{ now().year if now else '2026' }} Intima Wellness. All rights reserved.</p>
+    <p>For adults only. Not for individuals under 18.</p>
+  </div>
+</footer>

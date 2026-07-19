@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found — Intima{% endblock %}
+{% block meta_description %}The page you're looking for doesn't exist or has been moved.{% endblock %}
+
+{% block main %}
+<section class="section section-error">
+  <div class="container">
+    <div class="error-content">
+      <h1 class="error-code">404</h1>
+      <h2 class="error-title">Oops! Page not found</h2>
+      <p class="error-description">The page you're looking for doesn't exist or has been moved. Try searching or head back home.</p>
+      <form class="error-search" action="{{ url_for('shop.search') }}" method="get">
+        <div class="error-search-input">
+          <input type="search" name="q" class="form-input" placeholder="Search products..." aria-label="Search">
+          <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+      </form>
+      <a href="/" class="btn btn-outline btn-lg">Back to Home</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

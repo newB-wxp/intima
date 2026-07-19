@@ -9,7 +9,7 @@ def args_cache_key(*args, **kwargs):
     for k, v in request.args.items():
         _args[k] = v
     _args.pop('session_key', None)
-    args = str(hash(frozenset(_args.items()))) + str(request.is_xhr)
+    args = str(hash(frozenset(_args.items()))) + str(request.headers.get('X-Requested-With', '').lower() == 'xmlhttprequest')
     # lang = get_locale()
     # return (path + args + lang).encode('utf-8')
     return path + args

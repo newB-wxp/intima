@@ -4,6 +4,7 @@ import urllib
 import uuid
 import os
 import time
+import re
 from itertools import chain
 from uuid import uuid4
 import application.models as Models
@@ -23,6 +24,8 @@ from application.services.cache import cached
 
 auth = Blueprint('auth', __name__, url_prefix='/api/auth')
 
+# Supported OAuth platforms
+SUPPORTED_OAUTH_PLATFORMS = ['google', 'facebook', 'instagram', 'twitter']
 
 def get_oauth_token(sitename, code):
     if not code or code == 'authdeny':
@@ -32,19 +35,6 @@ def get_oauth_token(sitename, code):
     s = socialsites.get_site_object_by_name(sitename)
     try:
         s.get_access_token(code)
-    except SocialAPIError as e:
-        current_app.logger.error(
-            'SocialAPIError. sitename: {}; url: {}; msg: {}'.format(
-                e.site_name, e.url, e.error_msg))
-        return None, e.error_msg
-    else:
-        return s, ''
-
-def parse_token_response(sitename, data):
-    socialsites = SocialSites(SOCIALOAUTH_SITES)
-    s = socialsites.get_site_object_by_name(sitename)
-    try:
-        s.parse_token_response(data)
     except SocialAPIError as e:
         current_app.logger.error(
             'SocialAPIError. sitename: {}; url: {}; msg: {}'.format(
@@ -71,6 +61,7 @@ def logout():
         logout_user()
     return jsonify(message='OK')
 
+
 @auth.route('/oauth/links', methods=['GET'])
 @cached(21600)
 def oauth_links():
@@ -80,50 +71,43 @@ def oauth_links():
         return (_s.authorize_url, a_content)
 
     socialsites = SocialSites(SOCIALOAUTH_SITES)
-    links = map(_link, ['wechat', 'weibo', 'facebook'])
-    return jsonify(message="OK", links = list(links))
+    links = map(_link, SUPPORTED_OAUTH_PLATFORMS)
+    return jsonify(message="OK", links=list(links))
 
 
-@auth.route('/oauth/<sitename>',methods=['GET'])
+@auth.route('/oauth/<sitename>', methods=['GET'])
 def callback(sitename):
-
     from application.models import SocialOAuth
 
-    if sitename in ['weibo_app', 'qq_app', 'facebook_app']:
-        s, msg = parse_token_response(sitename, request.args)
-        app = 'IOS'
-
-    else:
-        code = request.args.get('code')
-        s, msg = get_oauth_token(sitename, code)
-        app = sitename !='wechat_app' and 'MOBILEWEB' or 'IOS'
+    code = request.args.get('code')
+    s, msg = get_oauth_token(sitename, code)
+    app = 'MOBILEWEB'
 
     if s is None:
-        print (msg)
+        print(msg)
         return jsonify(message='Failed', error=msg)
 
-    if sitename in ['wechat', 'wechat_app']:
-        oauth = SocialOAuth.objects(unionid=s.unionid).first()
-    else:
-        oauth = SocialOAuth.objects(site_uid=s.uid).first()
+    oauth = SocialOAuth.objects(site_uid=s.uid).first()
 
     if not oauth:
-        oauth = SocialOAuth.create(s.site_name, s.uid, s.name, s.access_token,
-                                   s.expires_in, s.refresh_token,
-                                   app=app, unionid=getattr(s, 'unionid', None),
-                                   gender=s.gender)
+        oauth = SocialOAuth.create(
+            s.site_name, s.uid, s.name, s.access_token,
+            s.expires_in, s.refresh_token,
+            app=app,
+            gender=s.gender)
 
-        path = 'avatar/{}/{}.jpeg'.format(oauth.user.id, str(time.time()).replace('.',''))
-        Jobs.image.save_avatar('maybi-img', path, url=s.avatar_large, save_original=True)
-        url = "http://assets.maybi.cn/%s"%path
+        path = 'avatar/{}/{}.jpeg'.format(
+            oauth.user.id, str(time.time()).replace('.', ''))
+        Jobs.image.save_avatar('maybi-img', path, url=s.avatar_large,
+                               save_original=True)
+        url = "http://assets.maybi.cn/%s" % path
         oauth.update_avatar(url)
         user_id = str(oauth.user.id)
         login_user(oauth.user, remember=True)
         return jsonify(message='OK', login=False, user_id=user_id)
 
     else:
-        oauth.re_auth(s.access_token, s.expires_in, s.refresh_token,
-                      getattr(s, 'unionid', None))
+        oauth.re_auth(s.access_token, s.expires_in, s.refresh_token, None)
         if oauth.user.account.is_email_verified:
             login_user(oauth.user, remember=True)
             return jsonify(message='OK', login=True,
@@ -135,18 +119,27 @@ def callback(sitename):
                            user_id=user_id)
 
 
-# DATA email, password
+# POST /login_email  DATA: email, password
 @auth.route('/login_email', methods=['POST'])
 def login_email():
     data = request.json
-    email = data.get('email', '')
+    email = (data.get('email') or '').strip().lower()
+    password = data.get('password', '')
+
+    # Validate input
+    if not email or len(email) > 254:
+        return jsonify(message='Failed', error='Please enter a valid email address')
+    if not password or len(password) > 128:
+        return jsonify(message='Failed', error='Invalid email or password')
+
     user, authenticated = Models.User.authenticate(
-        email=email, password=data.get('password', ''))
+        email=email, password=password)
     if not authenticated:
-        return jsonify(message='Failed')
+        return jsonify(message='Failed', error='Invalid email or password')
     login_user(user, remember=True)
     return jsonify(message='OK', user=Json.get_user_info(user),
                    remember_token=user.generate_auth_token())
+
 
 @auth.route('/login_with_token', methods=['POST'])
 def login_with_token():
@@ -159,49 +152,55 @@ def login_with_token():
     return jsonify(message='OK', user=Json.get_user_info(user),
                    remember_token=user.generate_auth_token())
 
-@auth.route('/add_oauth/<sitename>')
-@login_required
-def add_another_oauth(sitename):
-    from application.models import SocialOAuth
-
-    user = current_user._get_current_object()
-
-    # if already have an oauth of this site
-    if SocialOAuth.objects.objects(user=user, site=sitename):
-        return jsonify(message='Failed', error=_('multi oauth of same site'))
-
-    if '_app' in sitename:
-        s, msg = parse_token_response(sitename, request.args)
-
-    else:
-        code = request.args.get('code')
-        s, msg = get_oauth_token(sitename, code)
-
-    if s is None:
-        return jsonify(message='Failed', error=msg)
-
-    oauth = SocialOAuth.objects.get_or_create(
-        site_uid=s.uid, site=s.site_name,
-        defaults={'access_token': s.access_token})
-    oauth.re_auth(s.access_token, s.expires_in, s.refresh_token)
-    add_oauth(current_user, oauth)
-    return jsonify(message='OK')
 
 @auth.route('/signup', methods=['POST'])
 def email_signup():
     data = request.json
-    email = data.get('email')
-    password = data.get('password')
-    name = data.get('name')
-    if not password:
-        # 不能为空
-        return jsonify(message='Failed', error=_(u'Please fill in.'))
+    email = (data.get('email') or '').strip().lower()
+    password = data.get('password', '')
+    confirm_password = data.get('confirm_password', '')
+    name = (data.get('name') or '').strip()
 
+    # Validate email format
+    email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if not email or not re.match(email_pattern, email):
+        return jsonify(message='Failed', error='Please enter a valid email address')
+
+    # Validate email length
+    if len(email) > 254:
+        return jsonify(message='Failed', error='Email address is too long')
+
+    # Validate password strength: min 8 chars, must contain uppercase, lowercase, digit
+    if not password or len(password) < 8:
+        return jsonify(message='Failed',
+                       error='Password must be at least 8 characters')
+    if len(password) > 128:
+        return jsonify(message='Failed', error='Password is too long')
+    if not re.search(r'[A-Z]', password):
+        return jsonify(message='Failed',
+                       error='Password must contain at least one uppercase letter')
+    if not re.search(r'[a-z]', password):
+        return jsonify(message='Failed',
+                       error='Password must contain at least one lowercase letter')
+    if not re.search(r'[0-9]', password):
+        return jsonify(message='Failed',
+                       error='Password must contain at least one digit')
+
+    # Validate confirm password
+    if password != confirm_password:
+        return jsonify(message='Failed', error='Passwords do not match')
+
+    # Validate name
+    if name and len(name) > 100:
+        return jsonify(message='Failed', error='Name is too long')
+
+    # Check email uniqueness
     if Models.User.objects(account__email=email):
-        return jsonify(message='Failed', error=_(u'This email has been registered.'))
+        return jsonify(message='Failed', error='This email has already been registered')
 
     if not name:
-        name = 'Maybi' + str(time.time()).replace('.','')
+        name = 'User' + str(time.time()).replace('.', '')[:10]
+
     user = Models.User.create(email=email, password=password, name=name)
 
     login_user(user, remember=True)
@@ -226,39 +225,42 @@ def bind_email():
     return jsonify(message='OK', user=Json.get_user_info(u),
                    remember_token=u.generate_auth_token())
 
+
 @auth.route('/change_password', methods=['POST'])
 @login_required
 def change_password():
     original_password = request.json.get('original_password', '')
     user = current_user._get_current_object()
     if not user.account.check_password(original_password):
-        return jsonify(message='Failed', error=_(u'Wrong password'))
+        return jsonify(message='Failed', error=_('Wrong password'))
     password = request.form.get('password', '')
     if not password.isalnum():
-        # 密码包含非法字符
         return jsonify(message='Failed',
-                       error=_(u'Password contains illegal characters'))
+                       error=_('Password contains illegal characters'))
     if len(password) < 6:
-        # 密码长度不足
-        return jsonify(message='Failed', error=_(u'Password is too short'))
+        return jsonify(message='Failed', error=_('Password is too short'))
     update_password(user, password)
     return jsonify(message='OK')
+
 
 @auth.route('/forgot_password', methods=['POST'])
 def forgot_password():
     email = request.json.get('email')
     if not email:
-        return jsonify(message='Failed', error=_('Please correct the email format'))
+        return jsonify(message='Failed',
+                       error=_('Please correct the email format'))
     user = Models.User.objects(account__email=email).first()
     if not user:
-        return jsonify(message='Failed', error=_('Sorry, no user found for that email address'))
+        return jsonify(message='Failed',
+                       error=_('Sorry, no user found for that email address'))
 
     user.account.activation_key = str(uuid4())
     user.save()
     url = "http://account.may.bi/account/confirm_reset_password?activation_key=%s&email=%s" % \
-            (user.account.activation_key, user.account.email)
-    html = render_template('admin/user/_reset_password.html', username=user.name, url=url)
+        (user.account.activation_key, user.account.email)
+    html = render_template('admin/user/_reset_password.html',
+                           username=user.name, url=url)
     Jobs.noti.send_mail.delay([user.account.email],
-            _('Reset your password in ')+ 'Maybi',
-            html)
+                              _('Reset your password in ') + 'Maybi',
+                              html)
     return jsonify(message='OK')

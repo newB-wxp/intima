@@ -1,0 +1,88 @@
+# =============================================
+# Bibi Docker Compose — Render Deploy
+#
+# MongoDB and Redis are EXTERNAL services:
+#   - MongoDB: Atlas SRV (mongodb+srv://)
+#   - Redis:    Upstash (rediss://)
+#
+# Set all connection strings via environment variables:
+#   MONGODB_URI, REDIS_URL, CELERY_BROKER_URL, CELERY_RESULT_BACKEND
+# =============================================
+
+version: "3.8"
+
+services:
+  # =============================================
+  # Flask Web (Gunicorn + Flask)
+  # =============================================
+  web:
+    build: .
+    container_name: bibi-web
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=${FLASK_ENV:-production}
+      - MONGODB_URI=${MONGODB_URI}
+      - REDIS_URL=${REDIS_URL}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      - IDCARD_KEY=${IDCARD_KEY:-change-me-in-production}
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # =============================================
+  # Celery Worker
+  # =============================================
+  worker:
+    build: .
+    container_name: bibi-worker
+    restart: unless-stopped
+    command: celery -A application.cel worker --loglevel=info --concurrency=2
+    environment:
+      - FLASK_ENV=${FLASK_ENV:-production}
+      - MONGODB_URI=${MONGODB_URI}
+      - REDIS_URL=${REDIS_URL}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      - IDCARD_KEY=${IDCARD_KEY:-change-me-in-production}
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "celery", "-A", "application.cel", "inspect", "ping", "-d", "celery@$HOSTNAME"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # =============================================
+  # Celery Beat (scheduler)
+  # =============================================
+  beat:
+    build: .
+    container_name: bibi-beat
+    restart: unless-stopped
+    command: celery -A application.cel beat --loglevel=info
+    environment:
+      - FLASK_ENV=${FLASK_ENV:-production}
+      - MONGODB_URI=${MONGODB_URI}
+      - REDIS_URL=${REDIS_URL}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+      - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "celery", "-A", "application.cel", "beat", "--help"]
+      interval: 60s
+      timeout: 10s
+      retries: 2
+      start_period: 20s

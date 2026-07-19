@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+
+# Virtualenv
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Docker
+.dockerignore
+docker-compose.yml
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment (don't bake secrets into image)
+.env
+
+# Tests
+tests/
+.tox/
+.coverage
+
+# Temp
+temp/
+tmp/
+
+# Uploads (volume mounted)
+application/static/csv/*
+application/static/img/avatar/*

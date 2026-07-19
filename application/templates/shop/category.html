@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% from "macros/product_card.html" import product_card %}
+
+{% set active_page = 'shop' %}
+{% block title %}{{ category.name if category else 'Shop All' }}{% endblock %}
+{% block meta_description %}Browse our collection of premium intimate wellness products. {{ category.description if category else 'Body-safe, discreet, elegant.' }}{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="page-header">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="{{ url_for('website.home') }}">Home</a>
+      <span class="separator">/</span>
+      {% if category %}
+      <span class="current">{{ category.name }}</span>
+      {% else %}
+      <span class="current">Shop All</span>
+      {% endif %}
+    </nav>
+    <h1 class="page-title">{{ category.name if category else 'Shop All Products' }}</h1>
+  </div>
+
+  <div class="shop-layout">
+    {# Filter Sidebar #}
+    <aside class="filter-sidebar" id="filter-sidebar">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--spacing-lg);">
+        <h3 style="font-family:var(--font-heading);font-size:1.125rem;">Filters</h3>
+        <button id="filter-close" class="btn btn-ghost btn-sm" style="display:none;">&times;</button>
+      </div>
+
+      <div class="filter-section">
+        <h4 class="filter-title">Price Range</h4>
+        <div class="price-range">
+          <div class="price-range-inputs">
+            <input type="number" id="price-min" placeholder="Min" min="0" value="{{ filters.min_price if filters else '' }}">
+            <span>&ndash;</span>
+            <input type="number" id="price-max" placeholder="Max" min="0" value="{{ filters.max_price if filters else '' }}">
+          </div>
+          <button class="btn btn-outline btn-sm w-full" id="apply-price">Apply</button>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <h4 class="filter-title">Material</h4>
+        <label class="filter-option">
+          <input type="checkbox" name="material" value="silicone" {% if filters and 'silicone' in filters.materials %}checked{% endif %}> Silicone
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" name="material" value="glass" {% if filters and 'glass' in filters.materials %}checked{% endif %}> Glass
+        </label>
+        <label class="filter-option">
+          <input type="checkbox" name="material" value="metal" {% if filters and 'metal' in filters.materials %}checked{% endif %}> Metal
+        </label>
+      </div>
+
+      <div class="filter-section">
+        <h4 class="filter-title">Rating</h4>
+        {% for star in range(4, 0, -1) %}
+        <label class="star-filter">
+          <input type="radio" name="rating" value="{{ star }}" {% if filters and filters.rating == star %}checked{% endif %}>
+          <span class="stars">
+            {% for i in range(5) %}{% if i < star %}&#9733;{% else %}&#9734;{% endif %}{% endfor %}
+          </span>
+          <span class="label">&amp; up</span>
+        </label>
+        {% endfor %}
+      </div>
+
+      <button class="btn btn-primary btn-block" id="apply-filters">Apply Filters</button>
+      <a href="{{ url_for('website.shop') }}" class="btn btn-ghost btn-block btn-sm mt-sm">Clear All</a>
+    </aside>
+
+    {# Product Grid #}
+    <div>
+      <div class="sort-bar">
+        <button class="filter-toggle" id="filter-toggle" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle;"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="16" y2="12"/><line x1="4" y1="18" x2="12" y2="18"/></svg>
+          Filters
+        </button>
+        <span class="sort-bar-label">{{ products|length if products else 0 }} products</span>
+        <select class="sort-select" id="sort-select" aria-label="Sort products">
+          <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest</option>
+          <option value="price-low" {% if current_sort == 'price-low' %}selected{% endif %}>Price: Low to High</option>
+          <option value="price-high" {% if current_sort == 'price-high' %}selected{% endif %}>Price: High to Low</option>
+          <option value="rating" {% if current_sort == 'rating' %}selected{% endif %}>Best Rating</option>
+        </select>
+      </div>
+
+      {% if products %}
+      <div class="product-grid" style="grid-template-columns:repeat(3,1fr);">
+        {% for product in products %}
+          {{ product_card(product) }}
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="cart-empty">
+        <div class="cart-empty-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-light)" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+        <h2>No products found</h2>
+        <p>Try adjusting your filters or browse all products.</p>
+        <a href="{{ url_for('website.shop') }}" class="btn btn-primary">View All Products</a>
+      </div>
+      {% endif %}
+
+      {% if pagination and pagination.pages > 1 %}
+      <nav class="pagination" aria-label="Pagination">
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('website.shop', page=pagination.prev_num, **request.args) }}">&laquo;</a>
+        {% else %}
+        <span class="disabled">&laquo;</span>
+        {% endif %}
+
+        {% for page_num in pagination.iter_pages() %}
+          {% if page_num %}
+            <a href="{{ url_for('website.shop', page=page_num, **request.args) }}" class="{{ 'active' if page_num == pagination.page }}">{{ page_num }}</a>
+          {% else %}
+            <span>&hellip;</span>
+          {% endif %}
+        {% endfor %}
+
+        {% if pagination.has_next %}
+        <a href="{{ url_for('website.shop', page=pagination.next_num, **request.args) }}">&raquo;</a>
+        {% else %}
+        <span class="disabled">&raquo;</span>
+        {% endif %}
+      </nav>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

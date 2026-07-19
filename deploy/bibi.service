@@ -1,0 +1,39 @@
+# Render 部署无需使用 — Render 自动管理进程生命周期。
+# 本文件仅供裸机 / VPS 自部署（systemd）参考。
+[Unit]
+Description=Bibi - 一站式海外华人购物平台 (Gunicorn)
+Documentation=https://github.com/seasonstar/bibi
+After=network.target network-online.target
+Wants=network-online.target
+Requires=mongod.service redis.service
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/bibi
+EnvironmentFile=/opt/bibi/.env
+ExecStart=/opt/bibi/venv/bin/gunicorn -c /opt/bibi/gunicorn.conf.py wsgi:app
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+Restart=on-failure
+RestartSec=5s
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=10
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/bibi/logs /opt/bibi/application/static
+ReadOnlyPaths=/opt/bibi
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bibi
+
+[Install]
+WantedBy=multi-user.target

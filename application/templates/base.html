@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Intima Wellness{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Intima — Premium adult wellness. Body-safe, discreet, thoughtfully designed.{% endblock %}">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Intima Wellness">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="{% block og_title %}Intima Wellness{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Intima — Premium adult wellness. Body-safe, discreet, thoughtfully designed.{% endblock %}">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:url" content="{{ request.url }}">
+  {% block og_image %}{% endblock %}
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% block twitter_title %}Intima Wellness{% endblock %}">
+  <meta name="twitter:description" content="{% block twitter_description %}Intima — Premium adult wellness. Body-safe, discreet, thoughtfully designed.{% endblock %}">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="{{ request.url }}">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <!-- JSON-LD Organization Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Intima Wellness",
+    "url": "https://YOUR_DOMAIN",
+    "logo": "https://YOUR_DOMAIN/static/images/logo.png",
+    "sameAs": [
+      "https://twitter.com/intima_wellness",
+      "https://instagram.com/intima_wellness",
+      "https://facebook.com/intima_wellness"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "email": "support@intima-wellness.com"
+    }
+  }
+  </script>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+
+  <!-- Age Gate -->
+  {% include 'components/age_gate.html' %}
+
+  <!-- Header -->
+  {% include 'components/header.html' %}
+
+  <!-- Flash Messages -->
+  {% include 'components/flash_messages.html' %}
+
+  <!-- Main Content -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  {% include 'components/footer.html' %}
+
+  <!-- Scripts -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

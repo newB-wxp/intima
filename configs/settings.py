@@ -1,48 +1,12 @@
 # -*- coding: utf-8 -*-
 
 SOCIALOAUTH_SITES = (
-    ('wechat', 'socialoauth.sites.wechat.Wechat', '微信',
+    ('google', 'socialoauth.sites.google.Google', 'Google',
         {
-          'redirect_uri': 'http://m.maybi.cn/account/oauth/wechat',
+          'redirect_uri': 'http://m.maybi.cn/account/oauth/google',
           'client_id': '',
           'client_secret': '',
-          'scope': 'snsapi_userinfo'
-        }
-    ),
-    ('wechat_app', 'socialoauth.sites.wechat_app.WechatApp', '微信客户端',
-        {
-          'redirect_uri': 'http://m.maybi.cn/account/oauth/wechat',
-          'client_id': '',
-          'client_secret': '',
-          'scope': 'snsapi_userinfo'
-        }
-    ),
-    ('weibo', 'socialoauth.sites.weibo.Weibo', '新浪微博',
-        {
-          'redirect_uri': 'http://m.maybi.cn/account/oauth/weibo',
-          'client_id': '',
-          'client_secret': '',
-        }
-    ),
-    ('weibo_app', 'socialoauth.sites.weibo_app.WeiboApp', '新浪微博客户端',
-        {
-          'redirect_uri': 'http://m.maybi.cn/account/oauth/weibo',
-          'client_id': '',
-          'client_secret': '',
-        }
-    ),
-    ('qq', 'socialoauth.sites.qq.QQ', 'QQ',
-        {
-          'redirect_uri': 'http://m.maybi.cn/account/oauth/qq',
-          'client_id': '',
-          'client_secret': '',
-        }
-    ),
-    ('qq_app', 'socialoauth.sites.qq_app.QQApp', 'QQ客户端',
-        {
-          'redirect_uri': 'http://m.maybi.cn/account/oauth/qq',
-          'client_id': '',
-          'client_secret': '',
+          'scope': 'email profile openid'
         }
     ),
     ('facebook', 'socialoauth.sites.facebook.Facebook', 'Facebook',
@@ -52,9 +16,16 @@ SOCIALOAUTH_SITES = (
           'client_secret': '',
         }
     ),
-    ('facebook_app', 'socialoauth.sites.facebook_app.FacebookApp', 'Facebook客户端',
+    ('instagram', 'socialoauth.sites.instagram.Instagram', 'Instagram',
         {
-          'redirect_uri': 'http://m.maybi.cn/account/oauth/facebook',
+          'redirect_uri': 'http://m.maybi.cn/account/oauth/instagram',
+          'client_id': '',
+          'client_secret': '',
+        }
+    ),
+    ('twitter', 'socialoauth.sites.twitter.XTwitter', 'X (Twitter)',
+        {
+          'redirect_uri': 'http://m.maybi.cn/account/oauth/twitter',
           'client_id': '',
           'client_secret': '',
         }

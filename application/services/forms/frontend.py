@@ -3,9 +3,8 @@
 from flask import Markup
 
 from flask_wtf import Form
-from wtforms.fields import (HiddenField, BooleanField, TextField,
-                            PasswordField, SubmitField)
-from wtforms.fields.html5 import EmailField
+from wtforms.fields import (HiddenField, BooleanField, StringField,
+                            PasswordField, SubmitField, EmailField)
 from wtforms.validators import DataRequired, Length, EqualTo, Email, ValidationError
 
 from application.utils import (PASSWORD_LEN_MIN, PASSWORD_LEN_MAX,
@@ -15,7 +14,7 @@ import application.models as Models
 
 class LoginForm(Form):
     next = HiddenField()
-    login = TextField(u'Username or email', [DataRequired()])
+    login = StringField(u'Username or email', [DataRequired()])
     password = PasswordField('Password', [DataRequired(), Length(PASSWORD_LEN_MIN, PASSWORD_LEN_MAX)])
     remember = BooleanField('Remember me')
     submit = SubmitField('Sign in')
@@ -27,7 +26,7 @@ class SignupForm(Form):
             description=u"What's your email address?")
     password = PasswordField(u'Password', [DataRequired(), Length(PASSWORD_LEN_MIN, PASSWORD_LEN_MAX)],
             description=u'%s characters or more! Be tricky.' % PASSWORD_LEN_MIN)
-    name = TextField(u'Choose your username', [DataRequired(), Length(USERNAME_LEN_MIN, USERNAME_LEN_MAX)],
+    name = StringField(u'Choose your username', [DataRequired(), Length(USERNAME_LEN_MIN, USERNAME_LEN_MAX)],
             description=u"Don't worry. you can change it later.")
     agree = BooleanField(u'Agree to the ' +
         Markup('<a target="blank" href="/terms">Terms of Servic</a>'), [DataRequired()])

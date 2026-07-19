@@ -1,0 +1,13 @@
+{# components/flash_messages.html - Flask Flash Messages #}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-messages" role="alert">
+  {% for category, message in messages %}
+  <div class="flash-message {{ category }}">
+    <span>{{ message }}</span>
+    <button class="flash-close" aria-label="Dismiss">&times;</button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}

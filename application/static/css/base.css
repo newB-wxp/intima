@@ -1,0 +1,52 @@
+@charset "utf-8";
+/* base.css - Maybi core styles */
+
+/* Reset */
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img, select, input, textarea {
+    margin: 0; padding: 0;
+}
+ul, ol { list-style: none; }
+a { text-decoration: none; color: #636363; }
+
+body {
+    font: 14px/20px Tahoma, Arial, Roboto, "Droid Sans", "Helvetica Neue", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
+    background-color: #fff;
+    color: #636363;
+    margin: 0 auto;
+}
+
+/* ng-cloak */
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}
+
+/* Header */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+/* View container */
+.view-container {
+    position: absolute;
+    width: 100%;
+    min-height: 100%;
+    z-index: 0;
+    top: 0;
+    margin-top: 40px;
+    overflow-x: hidden;
+}
+
+/* Route loading indicator */
+[route-loading-indicator] {
+    display: none;
+}
+
+/* debug */
+.debug-info {
+    z-index: 3;
+    background-color: white;
+}

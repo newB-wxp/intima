@@ -1,0 +1,84 @@
+# Render Blueprint — Bibi Adult Independent Station
+# https://render.com/docs/blueprint-spec
+
+services:
+  # =============================================
+  # Web Service: Flask + Gunicorn
+  # =============================================
+  - type: web
+    name: bibi-web
+    runtime: python
+    pythonVersion: "3.12"
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn application.app:app --workers 3 --max-requests 1000 --timeout 60
+    healthCheckPath: /api/health
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        sync: false
+      - key: IDCARD_KEY
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: CELERY_BROKER_URL
+        sync: false
+      - key: CELERY_RESULT_BACKEND
+        sync: false
+      - key: CCBILL_ACCOUNT_ID
+        sync: false
+      - key: CCBILL_API_KEY
+        sync: false
+      - key: ECOMCHARGE_API_KEY
+        sync: false
+      - key: WCPAY_API_KEY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: FACEBOOK_APP_ID
+        sync: false
+      - key: FACEBOOK_APP_SECRET
+        sync: false
+      - key: OAUTH_REDIRECT_BASE
+        sync: false
+      - key: PAYMENT_SANDBOX
+        value: "true"
+      - key: TALISMAN_ENABLED
+        value: "true"
+      - key: DEV_MODE
+        value: "false"
+
+  # =============================================
+  # Worker Service: Celery Worker
+  # =============================================
+  - type: worker
+    name: bibi-worker
+    runtime: python
+    pythonVersion: "3.12"
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: celery -A application.cel worker --loglevel=info --concurrency=2
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        sync: false
+      - key: IDCARD_KEY
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: CELERY_BROKER_URL
+        sync: false
+      - key: CELERY_RESULT_BACKEND
+        sync: false
+      - key: DEV_MODE
+        value: "false"

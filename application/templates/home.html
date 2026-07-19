@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% from "macros/product_card.html" import product_card %}
+
+{% block title %}Intima Wellness{% endblock %}
+{% block meta_description %}Discover premium intimate wellness products. Body-safe materials, discreet packaging, and elegant designs for your personal care journey.{% endblock %}
+{% block og_title %}Intima Wellness — Premium Intimate Care{% endblock %}
+
+{% block content %}
+
+{# Hero Section #}
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <h1 class="hero-title">Wellness Redefined</h1>
+    <p class="hero-subtitle">
+      Thoughtfully designed personal wellness devices. Medical-grade materials, discreet delivery, and a commitment to your intimate care.
+    </p>
+    <a href="{{ url_for('website.shop') }}" class="btn btn-primary btn-lg">Explore Collection</a>
+  </div>
+</section>
+
+{# New Arrivals #}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">New Arrivals</h2>
+      <p class="section-subtitle">The latest in intimate wellness, crafted with care.</p>
+    </div>
+    <div class="product-grid">
+      {% for product in new_arrivals %}
+        {{ product_card(product) }}
+      {% else %}
+        {% for i in range(4) %}
+        <div class="product-card">
+          <div class="product-card-image" style="background:var(--color-bg);display:flex;align-items:center;justify-content:center;aspect-ratio:1;">
+            <span style="color:var(--color-text-light);font-size:0.875rem;">Coming Soon</span>
+          </div>
+          <div class="product-card-body">
+            <h3 class="product-card-name">New Product {{ i+1 }}</h3>
+            <div class="product-card-price">$--.--</div>
+            <div class="product-card-rating">
+              <span class="stars">★★★★★</span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Best Sellers #}
+<section class="section" style="background:var(--color-bg-white);">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Best Sellers</h2>
+      <p class="section-subtitle">Loved by our community, trusted for quality.</p>
+    </div>
+    <div class="product-grid">
+      {% for product in best_sellers %}
+        {{ product_card(product) }}
+      {% else %}
+        {% for i in range(4) %}
+        <div class="product-card">
+          <div class="product-card-image" style="background:var(--color-bg);display:flex;align-items:center;justify-content:center;aspect-ratio:1;">
+            <span style="color:var(--color-text-light);font-size:0.875rem;">Coming Soon</span>
+          </div>
+          <div class="product-card-body">
+            <h3 class="product-card-name">Bestseller {{ i+1 }}</h3>
+            <div class="product-card-price">$--.--</div>
+            <div class="product-card-rating">
+              <span class="stars">★★★★★</span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Value Propositions #}
+<section class="value-props">
+  <div class="container">
+    <div class="value-props-grid">
+      <div class="value-prop">
+        <div class="value-prop-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Body-Safe Materials</h3>
+        <p>Medical-grade silicone and hypoallergenic materials, rigorously tested for your safety and comfort.</p>
+      </div>
+      <div class="value-prop">
+        <div class="value-prop-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3>Discreet Shipping</h3>
+        <p>Plain packaging with no external branding. Your privacy is our priority, from checkout to delivery.</p>
+      </div>
+      <div class="value-prop">
+        <div class="value-prop-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <h3>Premium Quality</h3>
+        <p>Designed with intention. Every product reflects our commitment to elegant design and lasting performance.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# Blog Preview #}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">From the Journal</h2>
+      <p class="section-subtitle">Insights on wellness, intimacy, and self-care.</p>
+    </div>
+    <div class="blog-grid">
+      {% for post in blog_posts %}
+      <article class="blog-card">
+        {% if post.image %}
+        <div class="blog-card-image"><img data-src="{{ post.image }}" alt="{{ post.title }}" loading="lazy"></div>
+        {% endif %}
+        <div class="blog-card-body">
+          <time class="blog-card-date">{{ post.published_at.strftime('%B %d, %Y') if post.published_at else 'Recently' }}</time>
+          <h3 class="blog-card-title"><a href="{{ url_for('website.blog_post', slug=post.slug) }}">{{ post.title }}</a></h3>
+          <p class="blog-card-excerpt">{{ post.excerpt }}</p>
+          <a href="{{ url_for('website.blog_post', slug=post.slug) }}" class="btn btn-ghost btn-sm">Read More &rarr;</a>
+        </div>
+      </article>
+      {% else %}
+        {% for i in range(3) %}
+        <article class="blog-card">
+          <div class="blog-card-image" style="background:var(--color-bg);display:flex;align-items:center;justify-content:center;"><span style="color:var(--color-text-light);">Coming Soon</span></div>
+          <div class="blog-card-body">
+            <time class="blog-card-date">Coming Soon</time>
+            <h3 class="blog-card-title"><a href="#">New Article {{ i+1 }}</a></h3>
+            <p class="blog-card-excerpt">Stay tuned for insights on intimate wellness and self-care.</p>
+          </div>
+        </article>
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# Newsletter Signup #}
+<section class="newsletter">
+  <div class="container">
+    <h2 class="newsletter-title">Stay Connected</h2>
+    <p class="newsletter-desc">Sign up for wellness tips, new arrivals, and exclusive offers.</p>
+    <form class="newsletter-form" action="{{ url_for('website.newsletter_subscribe') }}" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+      <input type="email" class="form-input" name="email" placeholder="Your email address" required aria-label="Email address">
+      <button type="submit" class="btn btn-primary">Subscribe</button>
+    </form>
+  </div>
+</section>
+
+{% endblock %}

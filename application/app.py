@@ -5,15 +5,15 @@ import re
 from redis import ConnectionPool
 from datetime import datetime
 from itsdangerous import TimestampSigner
-from werkzeug.contrib.fixers import ProxyFix
-from flask import Flask, request, jsonify, g, session, current_app, redirect
+from werkzeug.middleware.proxy_fix import ProxyFix
+from flask import Flask, request, jsonify, g, session, current_app, redirect, render_template
 from flask_principal import PermissionDenied, identity_loaded
 from flask_babel import gettext as _
 
 from application.extensions import (
     db, mail, cache, admin, login_manager,
     principal, bcrypt, babel, toolbar, assets,
-    redis, session_redis, mongo_inventory
+    redis, session_redis, mongo_inventory, csrf
 )
 import configs.config as ConfigsModel
 from application.services.permission import principal_on_identity_loaded
@@ -21,6 +21,8 @@ from application.redis_session_interface import RedisSessionInterface
 
 from application.utils import format_date, timesince, timeuntil, size_normal, \
     url_for_other_page, get_session_key
+from application.utils.sentry import init_sentry
+from application.utils.rate_limit import init_limiter
 
 
 # For import *
@@ -41,6 +43,7 @@ def create_app(config=None, app_name=None, blueprints=None):
                 template_folder='application/templates')
 
     configure_app(app, config)
+    init_sentry(app)
     configure_hook(app, app_name)
     configure_extensions(app)
     configure_blueprints(app, app_name, blueprints)
@@ -49,6 +52,7 @@ def create_app(config=None, app_name=None, blueprints=None):
     configure_error_handlers(app)
     if app_name != ConfigsModel.APP_NAME.worker:
         configure_admin(app)
+        configure_oauth(app)
 
     app.wsgi_app = ProxyFix(app.wsgi_app)
     return app
@@ -80,7 +84,7 @@ def configure_extensions(app):
     db.register_connection(**app.config.get('CONTENT_DB_CONFIG'))
     db.register_connection(**app.config.get('LOG_DB_CONFIG'))
 
-    mongo_inventory.init_app(app, config_prefix='MONGO_INVENTORY')
+    mongo_inventory.init_app(app, uri=app.config.get('MONGO_INVENTORY_URI'))
 
 
     redis.connection_pool = ConnectionPool(**app.config.get('REDIS_CONFIG'))
@@ -105,6 +109,14 @@ def configure_extensions(app):
 
     # flask-assets
     assets.init_app(app)
+
+    # flask-wtf CSRF
+    csrf.init_app(app)
+
+    # flask-talisman (security headers)
+    if app.config.get('TALISMAN_ENABLED'):
+        from flask_talisman import Talisman
+        Talisman(app, **app.config.get('TALISMAN_CONFIG', {}))
 
     # flask_debugtoolbar
     toolbar.init_app(app)
@@ -159,6 +171,30 @@ def configure_template_filters(app):
     app.jinja_env.globals['url_for_other_page'] = url_for_other_page
     app.jinja_env.globals['hasattr'] = hasattr
 
+    # Context processor: inject cart_count into all templates
+    @app.context_processor
+    def inject_cart_count():
+        count = 0
+        try:
+            if (current_user and hasattr(current_user, 'is_authenticated')
+                    and current_user.is_authenticated):
+                from application.models import Cart
+                cart = Cart.objects(user_id=current_user.id).first()
+                if cart and hasattr(cart, 'items'):
+                    count = sum(getattr(item, 'quantity', 0) for item in cart.items)
+        except Exception:
+            pass
+        return dict(cart_count=count)
+
+    # Context processor: inject categories into all templates
+    @app.context_processor
+    def inject_categories():
+        try:
+            from application.utils.categories import get_all_categories
+            categories = get_all_categories()
+            return dict(categories=categories)
+        except Exception:
+            return dict(categories=[])
 
     filters = app.jinja_env.filters
 
@@ -168,43 +204,13 @@ def configure_template_filters(app):
 
 
 def configure_logging(app):
-    """Configure file(info) and email(error) logging."""
+    """Initialize unified logging via application.utils.logger."""
+    from application.utils.logger import init_app_logger
+    init_app_logger(app)
 
-    if app.debug or app.testing:
-        # Skip debug and test mode.
-        # You can check stdout logging.
-        return
-
-    import logging
-    from logging.handlers import SMTPHandler
-
-    # Set info level on logger, which might be overwritten by handers.
-    # Suppress DEBUG messages.
-    app.logger.setLevel(logging.INFO)
-
-    info_log = os.path.join(app.root_path, "..", "logs", "app-info.log")
-    info_file_handler = logging.handlers.RotatingFileHandler(
-        info_log, maxBytes=1048576, backupCount=20)
-    info_file_handler.setLevel(logging.INFO)
-    info_file_handler.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s: %(message)s '
-        '[in %(pathname)s:%(lineno)d]')
-    )
-    app.logger.addHandler(info_file_handler)
-
-    ADMINS = ['seasonstar@126.com']
-    mail_handler = SMTPHandler(app.config['MAIL_SERVER'],
-                               app.config['MAIL_USERNAME'],
-                               ADMINS,
-                               'O_ops... %s failed!' % app.config['PROJECT'],
-                               (app.config['MAIL_USERNAME'],
-                                app.config['MAIL_PASSWORD']))
-    mail_handler.setLevel(logging.ERROR)
-    mail_handler.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s: %(message)s '
-        '[in %(pathname)s:%(lineno)d]')
-    )
-    app.logger.addHandler(mail_handler)
+    # Register request logging (DEV_MODE only)
+    from application.utils.request_logger import register_request_logging
+    register_request_logging(app)
 
 
 def configure_hook(app, name):
@@ -227,19 +233,23 @@ def configure_error_handlers(app):
         ''' exception thrown out by flask login'''
         return jsonify(message='Failed', code=401, error=_('Login required'))
 
-    @app.errorhandler(403)
-    def forbidden_page(error):
-        return jsonify(
-            message='Failed', code=403, error=_('Permission Denied'))
-
     @app.errorhandler(404)
     def page_not_found(error):
-        return jsonify(message='Failed', code=404, error=_('Page not found'))
+        '''Render friendly 404 page for HTML requests.'''
+        if request.path.startswith('/api/'):
+            return jsonify(message='Not Found', code=404, error=_('Resource not found'))
+        return render_template('errors/404.html'), 404
 
-    # @app.errorhandler(500)
-    # def server_error_page(error):
-    #     return jsonify(
-    #         message='Failed', code=500, error='Internal Server error')
+    @app.errorhandler(500)
+    def internal_server_error(error):
+        '''Render friendly 500 page for HTML requests.'''
+        if request.path.startswith('/api/'):
+            return jsonify(message='Server Error', code=500, error=_('Internal server error'))
+        return render_template('errors/500.html'), 500
+
+    # Enhanced error handlers (500 stack trace logging, friendly error pages)
+    from application.utils.error_handler import register_error_handlers
+    register_error_handlers(app)
 
 
 def configure_admin(app):
@@ -250,3 +260,10 @@ def configure_admin(app):
     admin.template_mode = 'bootstrap3'
     admin.init_app(app)
     admin.index_view = IndexView(name="Dashboard")
+
+
+def configure_oauth(app):
+    """Initialize Authlib OAuth (Google + Facebook)."""
+    from application.utils.oauth import oauth_bp, init_oauth
+    init_oauth(app)
+    app.register_blueprint(oauth_bp)

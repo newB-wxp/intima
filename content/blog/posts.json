@@ -1,0 +1,62 @@
+[
+  {
+    "id": "body-safe-materials-guide",
+    "title": "The Complete Guide to Body-Safe Materials",
+    "category": "buying-guides",
+    "date": "2026-07-10",
+    "summary": "Medical-grade silicone, glass, or metal — which material is right for you?",
+    "image": "/static/images/blog/materials-guide.jpg",
+    "tags": ["materials", "safety", "beginners"],
+    "content_file": "body-safe-materials-guide.md"
+  },
+  {
+    "id": "first-buyers-guide",
+    "title": "Your First Personal Massager: A Complete Buying Guide",
+    "category": "buying-guides",
+    "date": "2026-07-09",
+    "summary": "Everything you need to know before purchasing your first wellness device — from budget to features.",
+    "image": "/static/images/blog/first-buyer.jpg",
+    "tags": ["beginners", "buying-guide", "wellness"],
+    "content_file": "first-buyers-guide.md"
+  },
+  {
+    "id": "cleaning-care-guide",
+    "title": "How to Clean and Care for Your Wellness Devices",
+    "category": "care-tips",
+    "date": "2026-07-08",
+    "summary": "Proper cleaning and storage extends the life of your personal massagers. Learn the right techniques for every material.",
+    "image": "/static/images/blog/cleaning-guide.jpg",
+    "tags": ["cleaning", "care", "maintenance"],
+    "content_file": "cleaning-care-guide.md"
+  },
+  {
+    "id": "benefits-of-wellness-devices",
+    "title": "The Science-Backed Benefits of Personal Wellness Devices",
+    "category": "education",
+    "date": "2026-07-07",
+    "summary": "Research shows personal massagers offer real health and relationship benefits. Here is what the science says.",
+    "image": "/static/images/blog/benefits-wellness.jpg",
+    "tags": ["health", "science", "wellness"],
+    "content_file": "benefits-of-wellness-devices.md"
+  },
+  {
+    "id": "discreet-shopping-guide",
+    "title": "Your Guide to Discreet Shopping: Privacy from Click to Delivery",
+    "category": "buying-guides",
+    "date": "2026-07-06",
+    "summary": "How Intima protects your privacy at every step — from browsing to billing to your doorstep.",
+    "image": "/static/images/blog/discreet-shopping.jpg",
+    "tags": ["privacy", "shopping", "discreet"],
+    "content_file": "discreet-shopping-guide.md"
+  },
+  {
+    "id": "couples-guide",
+    "title": "Introducing Wellness Devices Into Your Relationship",
+    "category": "relationships",
+    "date": "2026-07-05",
+    "summary": "How to start the conversation, shop together, and explore new dimensions of shared wellness.",
+    "image": "/static/images/blog/couples-guide.jpg",
+    "tags": ["couples", "relationships", "communication"],
+    "content_file": "couples-guide.md"
+  }
+]

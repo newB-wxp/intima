@@ -77,6 +77,7 @@ celerybeat-schedule
 
 # dotenv
 .env
+# Allow .env.example to be tracked
 
 # virtualenv
 venv/
@@ -87,3 +88,30 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# ===========================================
+# Docker / Deployment
+# ===========================================
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp files
+temp/
+tmp/
+*.tmp
+
+# Backups
+backups/
+
+# Node (if frontend tooling added)
+node_modules/

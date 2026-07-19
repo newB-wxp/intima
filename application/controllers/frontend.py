@@ -25,10 +25,10 @@ frontend = Blueprint('frontend', __name__, url_prefix='')
 def redirect_next():
     return redirect(url_for('admin.index'))
 
-#@frontend.route('/', methods=['GET'])
+@frontend.route('/', methods=['GET'])
 def index():
-    return make_response(open(os.path.join(
-        TEMPLATE_DIR, 'index.html')).read())
+    """SSR home page — renders Jinja2 template instead of SPA index.html."""
+    return render_template('home/index.html')
 
 @frontend.route('/api/v1/apps/<appid>/updates/check/', methods=['POST'])
 @frontend.route('/api/v1/apps/<appid>/updates/check/<uuid>', methods=['POST'])
@@ -51,11 +51,6 @@ def app_update(appid, uuid=None):
 def getZip(filename):
     return make_response(open(os.path.join(
         TEMPLATE_DIR, filename)).read())
-
-@frontend.route('/account/oauth/<sitename>', methods=['GET'])
-def oauth(sitename):
-    code = request.args.get('code')
-    return redirect('http://m.maybi.cn/#/account/oauth/%s?code=%s' % (sitename, code))
 
 
 @frontend.route('/admin/login', methods=['GET', 'POST'])

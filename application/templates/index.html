@@ -1,4 +1,3 @@
-<!doctype html>
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html lang="zh" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html lang="zh" class="no-js lt-ie9 lt-ie8"> <![endif]-->
@@ -20,18 +19,108 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta property="qc:admins" content="141456361121636" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <!-- SEO Meta Tags -->
+    <title>Bibi - 一站式海外华人购物平台</title>
+    <meta name="description" content="Bibi - 海外华人一站式购物平台，涵盖母婴、美妆、食品、家居等品类，正品保障，全球直邮。">
+    <meta name="keywords" content="Bibi,海外购物,华人购物,正品代购,跨境电商,母婴,美妆,零食,家居">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Bibi Team">
+
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Bibi - 一站式海外华人购物平台">
+    <meta property="og:description" content="海外华人一站式购物平台，涵盖母婴、美妆、食品、家居等品类，正品保障，全球直邮。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://bibi.shop">
+    <meta property="og:image" content="/static/img/logo.png">
+    <meta property="og:site_name" content="Bibi">
+    <meta property="og:locale" content="zh_CN">
+
+    <!-- Open Graph (alternate EN) -->
+    <meta property="og:locale:alternate" content="en_US">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Bibi - 一站式海外华人购物平台">
+    <meta name="twitter:description" content="海外华人一站式购物平台，涵盖母婴、美妆、食品、家居等品类，正品保障，全球直邮。">
+    <meta name="twitter:image" content="/static/img/logo.png">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://bibi.shop/">
+
+    <!-- Structured Data: Organization (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Bibi",
+        "url": "https://bibi.shop",
+        "logo": "/static/img/logo.png",
+        "description": "一站式海外华人购物平台",
+        "sameAs": [],
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "customer service",
+            "email": "season@maybi.cn"
+        }
+    }
+    </script>
+
     <link rel="stylesheet" href="/static/css/base.css" type="text/css" media="screen">
     <link rel="stylesheet" href="/static/css/angular-carousel.min.css" type="text/css">
-    <title>美比 - 一站式解决海外华人购买国内商品平台</title>
+    <link rel="stylesheet" href="/static/css/store.css" type="text/css">
 </head>
 
 <body ng-cloak ng-controller="bodyCtrl">
-<header page-header class="header" ng-controller="headerCtrl" ng-cloak>
+<header ng-controller="headerCtrl" class="nav-bar" ng-cloak>
+    <a class="nav-logo" ng-click="goHome()">Bibi Store</a>
+    <div class="nav-links">
+        <a ng-click="goToProducts()">Products</a>
+        <a href="#!/cart">Cart</a>
+    </div>
+    <div class="nav-right">
+        <div class="nav-search">
+            <input type="text" ng-model="searchQuery" placeholder="Search products..." ng-keypress="$event.keyCode===13 && search()">
+            <button ng-click="search()">Search</button>
+        </div>
+        <a class="nav-cart" ng-click="goToCart()">
+            Cart
+            <span class="cart-badge" ng-if="cartCount > 0">{{cartCount}}</span>
+        </a>
+        <span class="nav-user">
+            <span ng-if="!isLoggedIn">
+                <a ng-click="goToLogin()">Login</a>
+                <a ng-click="goToSignup()">Sign Up</a>
+            </span>
+            <span ng-if="isLoggedIn">
+                <span>{{user.name || 'User'}}</span>
+                <a ng-click="logout()">Logout</a>
+            </span>
+        </span>
+    </div>
 </header>
 <div class="view-container" ng-view></div>
 <route-loading-indicator></route-loading-indicator>
 
-<script data-main="/static/ng-js/main" src="/static/ng-js/libs/require.js"></script>
+<!-- AngularJS Core -->
+<script src="/static/ng-js/libs/angular.js"></script>
+<script src="/static/ng-js/libs/angular-route.js"></script>
+<script src="/static/ng-js/libs/angular-animate.js"></script>
+<script src="/static/ng-js/libs/angular-sanitize.js"></script>
+<!-- Services -->
+<script src="/static/ng-js/services/apiService.js"></script>
+<script src="/static/ng-js/services/authService.js"></script>
+<script src="/static/ng-js/services/cartService.js"></script>
+<!-- Controllers -->
+<script src="/static/ng-js/controllers/headerCtrl.js"></script>
+<script src="/static/ng-js/controllers/loginCtrl.js"></script>
+<script src="/static/ng-js/controllers/signupCtrl.js"></script>
+<script src="/static/ng-js/controllers/productListCtrl.js"></script>
+<script src="/static/ng-js/controllers/productDetailCtrl.js"></script>
+<script src="/static/ng-js/controllers/cartCtrl.js"></script>
+<script src="/static/ng-js/controllers/checkoutCtrl.js"></script>
+<!-- App Bootstrap -->
+<script src="/static/ng-js/main.js"></script>
 
 </body>
 </html>

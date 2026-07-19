@@ -94,6 +94,10 @@ class Payment(db.Document):
     modified = db.DateTimeField()
     redirect_url = db.StringField()
 
+    # Phase 1: Adult payment channel tracking
+    payment_channel = db.StringField(choices=['ccbill', 'ecomcharge', 'wcpay'])
+    payment_ref = db.StringField(max_length=100)
+
     @property
     def is_paid(self):
         return self.status == PAYMENT_STATUS.PAID

@@ -121,7 +121,7 @@ class N(AdminView):
         def render_json(lid):
             return jsonify(message="OK")
 
-        return request.is_xhr and {
+        return request.headers.get('X-Requested-With', '').lower() == 'xmlhttprequest' and {
             'GET': lambda f: render_json(f.get('id')),
         }[request.method](request.form) or render_tpml(status)
 

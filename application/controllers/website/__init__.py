@@ -10,6 +10,10 @@ from . import item
 from . import logistic
 from . import payment
 from . import post
+from . import payment_webhook
+from . import health
+from . import blog
+from . import static_pages
 
 website_blueprints = [
     home.home,
@@ -22,4 +26,8 @@ website_blueprints = [
     logistic.logistic,
     payment.payment,
     post.post,
+    payment_webhook.payment_webhook,
+    health.health,
+    blog.blog,
+    static_pages.static_pages,
 ]

@@ -76,7 +76,7 @@ class OrderView(AdminView):
 
     @expose('/mall_info', methods=['GET', 'POST'])
     def edit_mall_info(self):
-        if not request.is_xhr: return jsonify({'message': 'FAILED'})# only for AJAX
+        if request.headers.get('X-Requested-With', '').lower() != 'xmlhttprequest': return jsonify({'message': 'FAILED'})# only for AJAX
 
         if request.method == 'GET':
             logistic_id = request.args.get('id')

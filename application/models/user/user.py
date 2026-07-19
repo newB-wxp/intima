@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import hashlib
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import URLSafeTimedSerializer as Serializer
 from application.extensions import db, bcrypt
 from flask import current_app
 from flask_login import UserMixin
@@ -55,8 +55,6 @@ class SocialOAuth(db.Document):
                            password=password or site_uname, name=site_uname)
         user.account.is_email_verified = is_email_verified
         user.information.gender = gender
-        if site == 'wechat':
-            user.subscribed_mp = True
         user.save()
 
         oauth.user = user
@@ -313,14 +311,14 @@ class User(db.Document, UserMixin, FavorAction):
         return user, authenticated
 
     def generate_auth_token(self, expires_in=604800):
-        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expires_in)
-        return s.dumps({'id': str(self.id)}).decode('utf-8')
+        s = Serializer(current_app.config['SECRET_KEY'])
+        return s.dumps({'id': str(self.id)})
 
     @staticmethod
-    def verify_auth_token(token):
+    def verify_auth_token(token, max_age=604800):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
-            data = s.loads(token)
+            data = s.loads(token, max_age=max_age)
         except:
             return None
         return User.objects(id=data['id']).first()

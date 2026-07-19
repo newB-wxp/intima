@@ -1,4 +1,8 @@
 # www.robotstxt.org/
 
 User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
 
+Sitemap: https://bibi.shop/sitemap.xml

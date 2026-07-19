@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% set current_page = 'account' %}
+
+{% block title %}My Orders — Intima{% endblock %}
+{% block meta_description %}View your order history and track shipments from Intima.{% endblock %}
+
+{% block main %}
+<section class="section section-orders">
+  <div class="container">
+    <h1 class="section-heading">My Orders</h1>
+
+    {% if orders %}
+    <div class="orders-table-wrapper">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr>
+            <td class="orders-order-number">
+              <a href="{{ url_for('account.order_detail', order_id=order.id) }}">#{{ order.order_number }}</a>
+            </td>
+            <td>
+              <time datetime="{{ order.created_at }}">{{ order.created_at }}</time>
+            </td>
+            <td>{{ order.total | currency }}</td>
+            <td>
+              {% set status_lower = order.status | lower %}
+              <span class="order-status-badge {% if status_lower == 'processing' %}badge-processing{% elif status_lower == 'shipped' %}badge-shipped{% elif status_lower == 'delivered' %}badge-delivered{% elif status_lower == 'cancelled' %}badge-cancelled{% endif %}">
+                {{ order.status }}
+              </span>
+            </td>
+            <td>
+              <a href="{{ url_for('account.order_detail', order_id=order.id) }}" class="btn btn-outline btn-sm">View Details</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="orders-empty">
+      <div class="orders-empty-icon">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 16h32l4 24H12l4-24z" stroke="#6B21A8" stroke-width="2"/>
+          <path d="M12 40h40v8H12v-8z" stroke="#6B21A8" stroke-width="2"/>
+          <circle cx="22" cy="48" r="3" fill="#6B21A8"/>
+          <circle cx="42" cy="48" r="3" fill="#6B21A8"/>
+        </svg>
+      </div>
+      <h2 class="orders-empty-title">No orders yet</h2>
+      <p class="orders-empty-text">You haven't placed any orders yet. Discover our premium collection and find something special.</p>
+      <a href="{{ url_for('shop.index') }}" class="btn btn-primary btn-lg">Start Shopping</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

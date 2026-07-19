@@ -9,7 +9,7 @@ mongo_inventory = PyMongo()
 from flask_mail import Mail
 mail = Mail()
 
-from flask_cache import Cache
+from flask_caching import Cache
 cache = Cache()
 
 from flask_admin import Admin
@@ -36,3 +36,6 @@ assets = Environment()
 from redis import Redis
 redis = Redis()
 session_redis = Redis()
+
+from flask_wtf import CSRFProtect
+csrf = CSRFProtect()

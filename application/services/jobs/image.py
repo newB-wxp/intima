@@ -9,7 +9,7 @@ from application.cel import celery
 
 
 @celery.task
-def upload(space, path, image=None, url=None, async=True, make_thumbnails=True):
+def upload(space, path, image=None, url=None, is_async=True, make_thumbnails=True):
 
     conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
     bucket_name = space
@@ -50,7 +50,7 @@ def upload(space, path, image=None, url=None, async=True, make_thumbnails=True):
 
 
 @celery.task
-def make_thumbnails(space, path, url, async=True):
+def make_thumbnails(space, path, url, is_async=True):
 
     conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
     bucket_name = space
@@ -74,7 +74,7 @@ def make_thumbnails(space, path, url, async=True):
 
 
 @celery.task
-def save_avatar(space, path, url, save_original=False, async=True):
+def save_avatar(space, path, url, save_original=False, is_async=True):
 
     conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
     bucket_name = space

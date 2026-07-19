@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful — Bibi</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+               background: #0f0f13; color: #e8e8ea; min-height: 100vh; display: flex;
+               align-items: center; justify-content: center; padding: 20px; }
+        .success-card { background: #1a1a20; border-radius: 16px; padding: 48px 40px;
+                        max-width: 440px; width: 100%; text-align: center;
+                        box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+        .check-icon { width: 72px; height: 72px; border-radius: 50%; background: #1db954;
+                      display: flex; align-items: center; justify-content: center;
+                      margin: 0 auto 24px; font-size: 36px; }
+        h1 { font-size: 24px; margin-bottom: 12px; }
+        p { color: #9a9aa5; font-size: 15px; line-height: 1.6; margin-bottom: 8px; }
+        .order-id { color: #ff6a3d; font-weight: 600; }
+        .btn { display: inline-block; margin-top: 28px; background: linear-gradient(135deg, #ff2d78, #ff6a3d);
+               color: #fff; text-decoration: none; border-radius: 12px; padding: 14px 32px;
+               font-size: 15px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="success-card">
+        <div class="check-icon">✓</div>
+        <h1>Payment Successful</h1>
+        <p>Thank you for your order.</p>
+        <p>Order <span class="order-id">#{{ order_short_id }}</span> has been confirmed.</p>
+        <p>A confirmation email is on its way.</p>
+        <a class="btn" href="/">Continue Shopping</a>
+    </div>
+</body>
+</html>
