@@ -45,3 +45,40 @@ def init_limiter(app):
 # 运行时 error_message 可通过 app.config 自定义：
 #   app.config['RATELIMIT_STORAGE_URI'] = "redis://..."
 #   429 响应由 Flask-Limiter 自动处理
+
+
+# ============================================
+# Legacy RateLimit class for api.py compat
+# ============================================
+import time
+from application.extensions import redis
+
+
+class RateLimit:
+    """Redis-based fixed-window rate limiter (legacy)."""
+
+    def __init__(self, key, limit, per):
+        self.key = key
+        self.limit = limit
+        self.per = per
+        self._now = time.time()
+
+    @property
+    def over_limit(self):
+        current = self._current_count()
+        return current >= self.limit
+
+    @property
+    def remaining(self):
+        return max(0, self.limit - self._current_count())
+
+    @property
+    def reset(self):
+        window_start = self._now - (self._now % self.per)
+        return int(window_start + self.per)
+
+    def _current_count(self):
+        try:
+            return int(redis.get(self.key) or 0)
+        except Exception:
+            return 0
