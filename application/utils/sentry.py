@@ -20,10 +20,15 @@ def init_sentry(app):
     if not dsn or app.config.get('TESTING'):
         return
 
-    sentry_sdk.init(
-        dsn=dsn,
-        integrations=[FlaskIntegration()],
-        traces_sample_rate=0.1,
-        environment=app.config.get('ENV', 'production'),
-        release=app.config.get('APP_VERSION', '1.0.0'),
-    )
+    try:
+        sentry_sdk.init(
+            dsn=dsn,
+            integrations=[FlaskIntegration()],
+            traces_sample_rate=0.1,
+            environment=app.config.get('ENV', 'production'),
+            release=app.config.get('APP_VERSION', '1.0.0'),
+        )
+    except Exception:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning('Sentry init failed (invalid DSN?), continuing without error monitoring.')
