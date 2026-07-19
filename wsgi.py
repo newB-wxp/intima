@@ -26,6 +26,20 @@ class _JSONEncoder(_json.JSONEncoder):
 
 _flask_json.JSONEncoder = _JSONEncoder
 
+# Monkey-patch: Flask 3.x removed app.json_encoder property,
+# but flask-mongoengine's override_json_encoder still uses it.
+import flask as _flask_pkg
+
+def _json_encoder_getter(self):
+    if not hasattr(self, '_json_encoder') or self._json_encoder is None:
+        return _JSONEncoder
+    return self._json_encoder
+
+def _json_encoder_setter(self, value):
+    self._json_encoder = value
+
+_flask_pkg.Flask.json_encoder = property(_json_encoder_getter, _json_encoder_setter)
+
 from application.app import create_app
 
 flask_env = os.environ.get('FLASK_ENV', 'production')
