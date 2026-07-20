@@ -22,15 +22,15 @@ ERROR_TEMPLATE = """
     <meta charset="UTF-8">
     <title>{title}</title>
     <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+{% raw %}        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
                display: flex; justify-content: center; align-items: center; min-height: 100vh;
-               margin: 0; background: #f5f5f5; color: #333; }}
-        .card {{ background: #fff; padding: 48px 64px; border-radius: 12px;
-                 box-shadow: 0 2px 16px rgba(0,0,0,0.08); text-align: center; max-width: 480px; }}
-        h1 {{ font-size: 72px; margin: 0; color: #e74c3c; font-weight: 200; }}
-        h2 {{ font-size: 20px; margin: 8px 0 16px; color: #555; }}
-        p {{ color: #888; font-size: 14px; line-height: 1.6; }}
-        a {{ color: #3498db; text-decoration: none; }}
+               margin: 0; background: #f5f5f5; color: #333; }
+        .card { background: #fff; padding: 48px 64px; border-radius: 12px;
+                 box-shadow: 0 2px 16px rgba(0,0,0,0.08); text-align: center; max-width: 480px; }
+        h1 { font-size: 72px; margin: 0; color: #e74c3c; font-weight: 200; }
+        h2 { font-size: 20px; margin: 8px 0 16px; color: #555; }
+        p { color: #888; font-size: 14px; line-height: 1.6; }
+        a { color: #3498db; text-decoration: none; }{% endraw %}
     </style>
 </head>
 <body>
