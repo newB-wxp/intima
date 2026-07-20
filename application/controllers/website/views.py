@@ -10,7 +10,6 @@ from flask import (
     session, current_app, abort, jsonify
 )
 from flask_login import current_user, login_required, login_user, logout_user
-from werkzeug.security import check_password_hash
 
 from application.models.inventory.item import Item
 from application.models.inventory.category import Category
@@ -19,7 +18,6 @@ from application.models.content.post import Post
 from application.models.content.banner import Banner
 from application.models.order.order import Order
 from application.models.cart.cart import Cart, CartEntry
-from application.models.user.user import User
 from application.extensions import db as mongo_db
 
 views = Blueprint(
@@ -419,74 +417,8 @@ def checkout():
 
 
 # ---------------------------------------------------------------------------
-# Blog
+# Static Pages (faq, contact, gift-cards only; others handled by static_pages.py)
 # ---------------------------------------------------------------------------
-
-@views.route("/blog")
-def blog_list():
-    page = request.args.get("page", 1, type=int)
-    per_page = 9
-    posts_qs = Post.objects().order_by("-created_at")
-    total = posts_qs.count()
-    total_pages = max(1, (total + per_page - 1) // per_page)
-    posts = [_post_to_dict(p) for p in posts_qs.skip((page - 1) * per_page).limit(per_page)]
-
-    return render_template(
-        "blog/list.html",
-        active_page="blog",
-        posts=posts,
-        pagination={
-            "page": page,
-            "pages": total_pages,
-            "total": total,
-            "has_next": page < total_pages,
-            "has_prev": page > 1,
-            "next_num": page + 1 if page < total_pages else None,
-            "prev_num": page - 1 if page > 1 else None,
-        },
-    )
-
-
-@views.route("/blog/<slug>")
-def blog_post(slug):
-    post = Post.objects(slug=slug).first()
-    if not post:
-        abort(404)
-    return render_template(
-        "blog/post.html",
-        active_page="blog",
-        post=_post_to_dict(post),
-    )
-
-
-# ---------------------------------------------------------------------------
-# Static Pages (privacy, terms, returns, shipping, about, faq, contact)
-# ---------------------------------------------------------------------------
-
-@views.route("/about")
-def about():
-    return render_template("static/about.html", active_page="about")
-
-
-@views.route("/privacy")
-def privacy():
-    return render_template("static/privacy.html")
-
-
-@views.route("/terms")
-def terms():
-    return render_template("static/terms.html")
-
-
-@views.route("/returns")
-def returns():
-    return render_template("static/returns.html")
-
-
-@views.route("/shipping")
-def shipping():
-    return render_template("static/shipping.html")
-
 
 @views.route("/faq")
 def faq():
