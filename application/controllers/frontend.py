@@ -27,8 +27,8 @@ def redirect_next():
 
 @frontend.route('/', methods=['GET'])
 def index():
-    """SSR home page — renders Jinja2 template instead of SPA index.html."""
-    return render_template('home.html')
+    """Redirect to the main home view."""
+    return redirect(url_for('website.home'))
 
 @frontend.route('/api/v1/apps/<appid>/updates/check/', methods=['POST'])
 @frontend.route('/api/v1/apps/<appid>/updates/check/<uuid>', methods=['POST'])
