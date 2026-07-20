@@ -20,7 +20,7 @@ ERROR_TEMPLATE = """
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>{title}</title>
+    <title>{{ title }}</title>
     <style>
 {% raw %}        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
                display: flex; justify-content: center; align-items: center; min-height: 100vh;
@@ -35,9 +35,9 @@ ERROR_TEMPLATE = """
 </head>
 <body>
     <div class="card">
-        <h1>{code}</h1>
-        <h2>{heading}</h2>
-        <p>{message}</p>
+        <h1>{{ code }}</h1>
+        <h2>{{ heading }}</h2>
+        <p>{{ message }}</p>
         <p><a href="/">&larr; 返回首页</a></p>
     </div>
 </body>
