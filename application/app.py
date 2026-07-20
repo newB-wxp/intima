@@ -87,9 +87,14 @@ def configure_extensions(app):
     mongo_inventory.init_app(app, uri=app.config.get('MONGO_INVENTORY_URI'))
 
 
-    redis.connection_pool = ConnectionPool(**app.config.get('REDIS_CONFIG'))
-    session_redis.connection_pool = ConnectionPool(
-        **app.config.get('SESSION_REDIS'))
+    redis_url = app.config.get('REDIS_URL', 'redis://localhost:6379')
+    redis.connection_pool = ConnectionPool.from_url(redis_url)
+    session_redis.connection_pool = ConnectionPool.from_url(
+        redis_url,
+        encoding='utf-8',
+        encoding_errors='strict',
+        decode_responses=False,
+    )
 
     # server side session
     app.session_interface = RedisSessionInterface(session_redis)
