@@ -270,7 +270,7 @@ class BaseConfig(object):
 
 
 class ProdConfig(BaseConfig):
-    DEBUG = True
+    DEBUG = False
     PROD = True
     ENV = E.production
 

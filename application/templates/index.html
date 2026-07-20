@@ -93,7 +93,7 @@
                 <a ng-click="goToSignup()">Sign Up</a>
             </span>
             <span ng-if="isLoggedIn">
-                <span>{{user.name || 'User'}}</span>
+                <span>{{user.name or 'User'}}</span>
                 <a ng-click="logout()">Logout</a>
             </span>
         </span>
