@@ -26,3 +26,4 @@ flask-babel==4.0.0
 flask-debugtoolbar==0.15.0
 flask-assets==2.1.0
 boto3==1.35.0
+socialoauth==0.3.3
