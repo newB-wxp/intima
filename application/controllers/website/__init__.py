@@ -14,8 +14,10 @@ from . import payment_webhook
 from . import health
 from . import blog
 from . import static_pages
+from . import views
 
 website_blueprints = [
+    views.views,
     home.home,
     auth.auth,
     user.user,
