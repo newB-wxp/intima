@@ -25,7 +25,24 @@ def _strip_background_from_id(idx):
     return idx
 
 
+def _is_id_index(keys):
+    """Check if keys target _id field."""
+    if isinstance(keys, str):
+        return keys == "_id"
+    if isinstance(keys, dict):
+        return "_id" in keys
+    if isinstance(keys, list):
+        for item in keys:
+            if isinstance(item, tuple) and item[0] == "_id":
+                return True
+            if isinstance(item, str) and item == "_id":
+                return True
+    return False
+
+
 def _patched_create_index(self, keys, **kwargs):
+    if _is_id_index(keys):
+        kwargs.pop("background", None)
     return _orig_create_index(self, _strip_background_from_id(keys), **kwargs)
 
 
