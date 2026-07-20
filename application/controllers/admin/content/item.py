@@ -16,7 +16,8 @@ from flask_babel import gettext as _
 from flask_login import current_user
 from mongoengine.queryset import Q
 from flask import request, current_app, redirect, jsonify, Response, \
-        Markup, flash, url_for, make_response
+        flash, url_for, make_response
+from markupsafe import Markup
 import application.models as Models
 from application.controllers.admin import AdminView
 from application.extensions import admin
