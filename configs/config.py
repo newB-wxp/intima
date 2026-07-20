@@ -185,7 +185,7 @@ class BaseConfig(object):
         'strict_transport_security_max_age': 31536000,
         'strict_transport_security_include_subdomains': True,
         'x_content_type_options': True,
-        'x_frame_options': 'DENY',
+        'frame_options': 'DENY',
         'referrer_policy': 'strict-origin-when-cross-origin',
     }
 
