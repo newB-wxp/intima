@@ -1,102 +1,117 @@
 from PIL import Image, ImageOps
 import urllib.request
-from io import StringIO
+from io import BytesIO
 
-import boto
-from boto.s3.key import Key
+import boto3
 from configs import settings
 from application.cel import celery
+
+
+def _get_s3_client():
+    return boto3.client(
+        's3',
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+    )
 
 
 @celery.task
 def upload(space, path, image=None, url=None, is_async=True, make_thumbnails=True):
 
-    conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+    s3 = _get_s3_client()
     bucket_name = space
-    bucket = conn.get_bucket(bucket_name)
-    k = Key(bucket)
 
     def make_thumb(image):
-        im =  Image.open(image)
+        im = Image.open(image)
         for size in [(400, 400), (150, 150)]:
-            output = StringIO()
-            im2 = ImageOps.fit(im, size, Image.ANTIALIAS)
+            output = BytesIO()
+            im2 = ImageOps.fit(im, size, Image.LANCZOS)
             im2.save(output, "JPEG")
-
-            k.key = "thumbnails/%sx%s/%s"%(size[0], size[1], path)
-            k.set_contents_from_string(output.getvalue())
-            k.make_public()
+            s3.put_object(
+                Bucket=bucket_name,
+                Key="thumbnails/%sx%s/%s" % (size[0], size[1], path),
+                Body=output.getvalue(),
+                ACL='public-read',
+            )
             output.close()
 
     # save original img
     if image is None and url:
         fd = urllib.request.urlopen(url)
-        image = StringIO(fd.read())
+        image = BytesIO(fd.read())
 
     else:
-        image = StringIO(image)
+        image = BytesIO(image)
 
-    k.key = path
-    k.set_contents_from_file(image)
-    k.make_public()
+    s3.put_object(
+        Bucket=bucket_name,
+        Key=path,
+        Body=image.getvalue(),
+        ACL='public-read',
+    )
 
     # make thumbnails
     if make_thumbnails:
         make_thumb(image)
 
     image.close()
-    orig_url = "http://assets.maybi.cn/%s"%path
+    orig_url = "http://assets.maybi.cn/%s" % path
     return orig_url
 
 
 @celery.task
 def make_thumbnails(space, path, url, is_async=True):
 
-    conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+    s3 = _get_s3_client()
     bucket_name = space
-    bucket = conn.get_bucket(bucket_name)
-    k = Key(bucket)
 
     # save original img
     fd = urllib.request.urlopen(url)
-    image = StringIO(fd.read())
+    image = BytesIO(fd.read())
 
-    im =  Image.open(image)
+    im = Image.open(image)
     for size in [(480, 480), (180, 180)]:
-        output = StringIO()
-        im2 = ImageOps.fit(im, size, Image.ANTIALIAS)
+        output = BytesIO()
+        im2 = ImageOps.fit(im, size, Image.LANCZOS)
         im2.save(output, "JPEG")
 
-        k.key = "post_thumbs/%sx%s/%s"%(size[0], size[1], path)
-        k.set_contents_from_string(output.getvalue())
-        k.make_public()
+        s3.put_object(
+            Bucket=bucket_name,
+            Key="post_thumbs/%sx%s/%s" % (size[0], size[1], path),
+            Body=output.getvalue(),
+            ACL='public-read',
+        )
         output.close()
 
 
 @celery.task
 def save_avatar(space, path, url, save_original=False, is_async=True):
 
-    conn = boto.connect_s3(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
+    s3 = _get_s3_client()
     bucket_name = space
-    bucket = conn.get_bucket(bucket_name)
-    k = Key(bucket)
-    fd = urllib.request.urlopen(url)
-    image = StringIO(fd.read())
 
+    fd = urllib.request.urlopen(url)
+    image = BytesIO(fd.read())
 
     # save original img
     if save_original:
-        k.key = path
-        k.set_contents_from_file(image)
-        k.make_public()
+        s3.put_object(
+            Bucket=bucket_name,
+            Key=path,
+            Body=image.getvalue(),
+            ACL='public-read',
+        )
 
-    im =  Image.open(image)
+    im = Image.open(image)
     for size in [(200, 200), (80, 80)]:
-        output = StringIO()
-        im2 = ImageOps.fit(im, size, Image.ANTIALIAS)
+        output = BytesIO()
+        im2 = ImageOps.fit(im, size, Image.LANCZOS)
         im2.save(output, "JPEG")
 
-        k.key = "avatar_thumbs/%sx%s/%s"%(size[0], size[1], path)
-        k.set_contents_from_string(output.getvalue())
-        k.make_public()
+        s3.put_object(
+            Bucket=bucket_name,
+            Key="avatar_thumbs/%sx%s/%s" % (size[0], size[1], path),
+            Body=output.getvalue(),
+            ACL='public-read',
+        )
         output.close()
