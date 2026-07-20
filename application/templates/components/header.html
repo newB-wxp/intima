@@ -8,8 +8,8 @@
       <nav class="nav-links" aria-label="Main navigation">
         <a href="{{ url_for('website.shop') }}" class="nav-link {{ 'active' if active_page == 'shop' }}">Shop</a>
         <a href="{{ url_for('website.collections') }}" class="nav-link {{ 'active' if active_page == 'collections' }}">Collections</a>
-        <a href="{{ url_for('website.blog_list') }}" class="nav-link {{ 'active' if active_page == 'blog' }}">Blog</a>
-        <a href="{{ url_for('website.about') }}" class="nav-link {{ 'active' if active_page == 'about' }}">About</a>
+        <a href="{{ url_for('blog.list_posts') }}" class="nav-link {{ 'active' if active_page == 'blog' }}">Blog</a>
+        <a href="{{ url_for('static.about') }}" class="nav-link {{ 'active' if active_page == 'about' }}">About</a>
       </nav>
     </div>
 
@@ -45,8 +45,8 @@
 <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
   <a href="{{ url_for('website.shop') }}" class="nav-link">Shop</a>
   <a href="{{ url_for('website.collections') }}" class="nav-link">Collections</a>
-  <a href="{{ url_for('website.blog_list') }}" class="nav-link">Blog</a>
-  <a href="{{ url_for('website.about') }}" class="nav-link">About</a>
+  <a href="{{ url_for('blog.list_posts') }}" class="nav-link">Blog</a>
+  <a href="{{ url_for('static.about') }}" class="nav-link">About</a>
   <a href="{{ url_for('website.faq') }}" class="nav-link">FAQ</a>
   <a href="{{ url_for('website.contact') }}" class="nav-link">Contact</a>
 </nav>
