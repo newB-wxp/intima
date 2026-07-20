@@ -2,7 +2,7 @@
 {% macro product_card(product, badge=None) %}
 <div class="product-card">
   <div class="product-card-image">
-    <a href="{{ product.url }}">
+    <a href="{{ product.slug }}">
       {% if product.image %}
       <img data-src="{{ product.image }}" alt="{{ product.name }}" loading="lazy">
       {% else %}
@@ -16,7 +16,7 @@
     {% endif %}
   </div>
   <div class="product-card-body">
-    <h3 class="product-card-name"><a href="{{ product.url }}">{{ product.name }}</a></h3>
+    <h3 class="product-card-name"><a href="{{ product.slug }}">{{ product.name }}</a></h3>
     <div class="product-card-price">
       ${{ "%.2f"|format(product.price) }}
       {% if product.compare_at_price and product.compare_at_price > product.price %}

@@ -116,12 +116,12 @@
   {% endif %}
 
   {# Related Products #}
-  {% if related_products %}
+  {% if related %}
   <div class="related-section">
     <h2 class="related-title">You May Also Like</h2>
     <div class="product-grid">
-      {% for related in related_products[:4] %}
-        {{ product_card(related) }}
+      {% for item in related[:4] %}
+        {{ product_card(item) }}
       {% endfor %}
     </div>
   </div>

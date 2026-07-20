@@ -1,126 +1,85 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html lang="zh" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html lang="zh" class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html lang="zh" class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!-->
-<html lang="zh">
-<!--<![endif]-->
-<head>
-    <meta charset="utf-8">
-    <base href="/">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    <meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
-    <meta content="no-cache,must-revalidate" http-equiv="Cache-Control">
-    <meta content="no-cache" http-equiv="pragma">
-    <meta content="0" http-equiv="expires">
-    <meta content="telephone=no, address=no" name="format-detection">
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta property="qc:admins" content="141456361121636" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+{% extends "base.html" %}
+{% from "macros/product_card.html" import product_card %}
 
-    <!-- SEO Meta Tags -->
-    <title>Bibi - 一站式海外华人购物平台</title>
-    <meta name="description" content="Bibi - 海外华人一站式购物平台，涵盖母婴、美妆、食品、家居等品类，正品保障，全球直邮。">
-    <meta name="keywords" content="Bibi,海外购物,华人购物,正品代购,跨境电商,母婴,美妆,零食,家居">
-    <meta name="robots" content="index, follow">
-    <meta name="author" content="Bibi Team">
+{% block body_class %}shop-page{% endblock %}
 
-    <!-- Open Graph Tags -->
-    <meta property="og:title" content="Bibi - 一站式海外华人购物平台">
-    <meta property="og:description" content="海外华人一站式购物平台，涵盖母婴、美妆、食品、家居等品类，正品保障，全球直邮。">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://bibi.shop">
-    <meta property="og:image" content="/static/img/logo.png">
-    <meta property="og:site_name" content="Bibi">
-    <meta property="og:locale" content="zh_CN">
+{% block title %}
+  {% if query %}Search Results for '{{ query }}'{% else %}Shop All Products{% endif %}
+{% endblock %}
 
-    <!-- Open Graph (alternate EN) -->
-    <meta property="og:locale:alternate" content="en_US">
+{% block meta_description %}Browse our collection of premium intimate wellness products.{% endblock %}
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Bibi - 一站式海外华人购物平台">
-    <meta name="twitter:description" content="海外华人一站式购物平台，涵盖母婴、美妆、食品、家居等品类，正品保障，全球直邮。">
-    <meta name="twitter:image" content="/static/img/logo.png">
+{% block content %}
+<div class="container">
 
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://bibi.shop/">
+  <div class="page-header">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="{{ url_for('website.home') }}">Home</a>
+      <span class="separator">/</span>
+      {% if query %}
+      <span class="current">Search</span>
+      {% else %}
+      <span class="current">Shop</span>
+      {% endif %}
+    </nav>
+    <h1 class="page-title">
+      {% if query %}Search Results for '{{ query }}'{% else %}Shop All Products{% endif %}
+    </h1>
+  </div>
 
-    <!-- Structured Data: Organization (JSON-LD) -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Bibi",
-        "url": "https://bibi.shop",
-        "logo": "/static/img/logo.png",
-        "description": "一站式海外华人购物平台",
-        "sameAs": [],
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "contactType": "customer service",
-            "email": "season@maybi.cn"
-        }
-    }
-    </script>
-
-    <link rel="stylesheet" href="/static/css/base.css" type="text/css" media="screen">
-    <link rel="stylesheet" href="/static/css/angular-carousel.min.css" type="text/css">
-    <link rel="stylesheet" href="/static/css/store.css" type="text/css">
-</head>
-
-<body ng-cloak ng-controller="bodyCtrl">
-<header ng-controller="headerCtrl" class="nav-bar" ng-cloak>
-    <a class="nav-logo" ng-click="goHome()">Bibi Store</a>
-    <div class="nav-links">
-        <a ng-click="goToProducts()">Products</a>
-        <a href="#!/cart">Cart</a>
+  {# Sort Bar #}
+  <div class="sort-bar">
+    <span class="sort-bar-label">{{ products|length if products else 0 }} products</span>
+    <div class="sort-options">
+      <a href="?sort=newest" class="sort-link{% if sort == 'newest' %} active{% endif %}">Newest</a>
+      <a href="?sort=price_asc" class="sort-link{% if sort == 'price_asc' %} active{% endif %}">Price: Low to High</a>
+      <a href="?sort=price_desc" class="sort-link{% if sort == 'price_desc' %} active{% endif %}">Price: High to Low</a>
+      <a href="?sort=bestsellers" class="sort-link{% if sort == 'bestsellers' %} active{% endif %}">Best Sellers</a>
     </div>
-    <div class="nav-right">
-        <div class="nav-search">
-            <input type="text" ng-model="searchQuery" placeholder="Search products..." ng-keypress="$event.keyCode===13 && search()">
-            <button ng-click="search()">Search</button>
-        </div>
-        <a class="nav-cart" ng-click="goToCart()">
-            Cart
-            <span class="cart-badge" ng-if="cartCount > 0">{{cartCount}}</span>
-        </a>
-        <span class="nav-user">
-            <span ng-if="!isLoggedIn">
-                <a ng-click="goToLogin()">Login</a>
-                <a ng-click="goToSignup()">Sign Up</a>
-            </span>
-            <span ng-if="isLoggedIn">
-                <span>{{ current_user.name if current_user.is_authenticated else 'User' }}</span>
-                <a ng-click="logout()">Logout</a>
-            </span>
-        </span>
+  </div>
+
+  {# Product Grid #}
+  {% if products %}
+  <div class="product-grid" style="grid-template-columns:repeat(3,1fr);">
+    {% for product in products %}
+      {{ product_card(product) }}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="cart-empty">
+    <div class="cart-empty-icon">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-light)" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </div>
-</header>
-<div class="view-container" ng-view></div>
-<route-loading-indicator></route-loading-indicator>
+    <h2>No products found</h2>
+    <p>Try adjusting your search or browse all products.</p>
+    <a href="{{ url_for('website.shop') }}" class="btn btn-primary">View All Products</a>
+  </div>
+  {% endif %}
 
-<!-- AngularJS Core -->
-<script src="/static/ng-js/libs/angular.js"></script>
-<script src="/static/ng-js/libs/angular-route.js"></script>
-<script src="/static/ng-js/libs/angular-animate.js"></script>
-<script src="/static/ng-js/libs/angular-sanitize.js"></script>
-<!-- Services -->
-<script src="/static/ng-js/services/apiService.js"></script>
-<script src="/static/ng-js/services/authService.js"></script>
-<script src="/static/ng-js/services/cartService.js"></script>
-<!-- Controllers -->
-<script src="/static/ng-js/controllers/headerCtrl.js"></script>
-<script src="/static/ng-js/controllers/loginCtrl.js"></script>
-<script src="/static/ng-js/controllers/signupCtrl.js"></script>
-<script src="/static/ng-js/controllers/productListCtrl.js"></script>
-<script src="/static/ng-js/controllers/productDetailCtrl.js"></script>
-<script src="/static/ng-js/controllers/cartCtrl.js"></script>
-<script src="/static/ng-js/controllers/checkoutCtrl.js"></script>
-<!-- App Bootstrap -->
-<script src="/static/ng-js/main.js"></script>
+  {# Pagination #}
+  {% if pagination and pagination.pages > 1 %}
+  <nav class="pagination" aria-label="Pagination">
+    {% if pagination.has_prev %}
+    <a href="{{ url_for('website.shop', page=pagination.prev_num, sort=sort, category=request.args.get('category')) }}">&laquo;</a>
+    {% else %}
+    <span class="disabled">&laquo;</span>
+    {% endif %}
 
-</body>
-</html>
+    {% for page_num in range(1, pagination.pages + 1) %}
+      {% if page_num == pagination.page %}
+      <span class="active">{{ page_num }}</span>
+      {% else %}
+      <a href="{{ url_for('website.shop', page=page_num, sort=sort, category=request.args.get('category')) }}">{{ page_num }}</a>
+      {% endif %}
+    {% endfor %}
+
+    {% if pagination.has_next %}
+    <a href="{{ url_for('website.shop', page=pagination.next_num, sort=sort, category=request.args.get('category')) }}">&raquo;</a>
+    {% else %}
+    <span class="disabled">&raquo;</span>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+</div>
+{% endblock %}
