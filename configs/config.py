@@ -113,13 +113,11 @@ class BaseConfig(object):
     }
 
     # ===========================================
-    # Upstash Redis (TLS — rediss://)
+    # Redis (Upstash or Render native)
     #
-    # Format: rediss://:token@host.upstash.io:port
-    _redis_url = os.environ.get(
-        'REDIS_URL',
-        'rediss://:token@host.upstash.io:6379'
-    )
+    # Upstash format:  rediss://:token@host.upstash.io:port
+    # Render format:   redis://host:port
+    _redis_url = os.environ.get('REDIS_URL', 'redis://localhost:6379')
 
     REDIS_CONFIG = {
         'host': _redis_url.split('@')[1].split(':')[0] if '@' in _redis_url else 'localhost',

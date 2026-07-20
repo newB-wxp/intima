@@ -23,12 +23,21 @@ services:
         sync: false
       - key: MONGODB_URI
         sync: false
-      - key: REDIS_URL
-        sync: false
       - key: CELERY_BROKER_URL
-        sync: false
+        fromService:
+          type: redis
+          name: bibi-redis
+          property: connectionString
       - key: CELERY_RESULT_BACKEND
-        sync: false
+        fromService:
+          type: redis
+          name: bibi-redis
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: bibi-redis
+          property: connectionString
       - key: CCBILL_ACCOUNT_ID
         sync: false
       - key: CCBILL_API_KEY
@@ -55,6 +64,14 @@ services:
         value: "false"
 
   # =============================================
+  # Redis: Session storage & Celery broker
+  # =============================================
+  - type: redis
+    name: bibi-redis
+    plan: free
+    ipAllowList: []
+
+  # =============================================
   # Worker Service: Celery Worker
   # =============================================
   - type: worker
@@ -74,11 +91,20 @@ services:
         sync: false
       - key: MONGODB_URI
         sync: false
-      - key: REDIS_URL
-        sync: false
       - key: CELERY_BROKER_URL
-        sync: false
+        fromService:
+          type: redis
+          name: bibi-redis
+          property: connectionString
       - key: CELERY_RESULT_BACKEND
-        sync: false
+        fromService:
+          type: redis
+          name: bibi-redis
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: bibi-redis
+          property: connectionString
       - key: DEV_MODE
         value: "false"
