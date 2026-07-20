@@ -25,10 +25,6 @@ frontend = Blueprint('frontend', __name__, url_prefix='')
 def redirect_next():
     return redirect(url_for('admin.index'))
 
-@frontend.route('/', methods=['GET'])
-def index():
-    """Redirect to the main home view."""
-    return redirect(url_for('website.home'))
 
 @frontend.route('/api/v1/apps/<appid>/updates/check/', methods=['POST'])
 @frontend.route('/api/v1/apps/<appid>/updates/check/<uuid>', methods=['POST'])
