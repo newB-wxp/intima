@@ -16,12 +16,16 @@ _orig_create_index = _pm_col.Collection.create_index
 _orig_create_indexes = _pm_col.Collection.create_indexes
 
 
-def _strip_background_from_id(idx):
-    """Remove 'background' from _id index specs."""
+# Fields forbidden on _id indexes by MongoDB Atlas 7.0+
+_FORBIDDEN_ID_FIELDS = {"background", "unique", "sparse"}
+
+
+def _strip_forbidden_from_id(idx):
+    """Remove forbidden fields from _id index specs."""
     if isinstance(idx, list):
-        return [_strip_background_from_id(i) for i in idx]
+        return [_strip_forbidden_from_id(i) for i in idx]
     if isinstance(idx, dict) and idx.get("key", {}).get("_id") is not None:
-        return {k: v for k, v in idx.items() if k != "background"}
+        return {k: v for k, v in idx.items() if k not in _FORBIDDEN_ID_FIELDS}
     return idx
 
 
@@ -43,11 +47,13 @@ def _is_id_index(keys):
 def _patched_create_index(self, keys, **kwargs):
     if _is_id_index(keys):
         kwargs.pop("background", None)
-    return _orig_create_index(self, _strip_background_from_id(keys), **kwargs)
+        kwargs.pop("unique", None)
+        kwargs.pop("sparse", None)
+    return _orig_create_index(self, _strip_forbidden_from_id(keys), **kwargs)
 
 
 def _patched_create_indexes(self, indexes, **kwargs):
-    return _orig_create_indexes(self, _strip_background_from_id(indexes), **kwargs)
+    return _orig_create_indexes(self, _strip_forbidden_from_id(indexes), **kwargs)
 
 
 _pm_col.Collection.create_index = _patched_create_index
