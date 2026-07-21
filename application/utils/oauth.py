@@ -14,7 +14,9 @@ Routes:
 """
 
 import json
+import os
 
+import bcrypt
 from flask import Blueprint, request, jsonify, redirect, url_for, current_app, session
 from flask_login import login_user
 from authlib.integrations.flask_client import OAuth
@@ -108,8 +110,8 @@ def _handle_oauth_callback(provider_name: str):
 
         # Find or create SocialOAuth record
         social = Models.SocialOAuth.objects(
-            provider=provider_name,
-            provider_uid=provider_uid,
+            site=provider_name,
+            site_uid=provider_uid,
         ).first()
 
         if social:
@@ -119,19 +121,27 @@ def _handle_oauth_callback(provider_name: str):
             user = Models.User.objects(account__email=email, is_deleted=False).first()
 
             if not user:
+                random_password_hash = bcrypt.generate_password_hash(
+                    os.urandom(16).hex()
+                ).decode('utf-8')
                 user = Models.User.create(
                     email=email,
                     name=name,
-                    password=None,  # OAuth users have no password
+                    password=random_password_hash,
                 )
 
             # Create SocialOAuth record
-            Models.SocialOAuth(
+            social = Models.SocialOAuth(
                 user=user,
-                provider=provider_name,
-                provider_uid=provider_uid,
-                avatar=avatar,
-            ).save()
+                site=provider_name,
+                site_uid=provider_uid,
+                site_uname=name,
+                access_token=token.get('access_token', ''),
+            )
+            social.save()
+
+            if avatar:
+                social.update_avatar(avatar)
 
         login_user(user, remember=True)
         auth_token = user.generate_auth_token()
