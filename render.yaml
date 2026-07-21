@@ -11,7 +11,7 @@ services:
     region: oregon
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn wsgi:app --workers 3 --max-requests 1000 --timeout 60
+    startCommand: gunicorn wsgi:app --workers 3 --max-requests 1000 --timeout 60 -b 0.0.0.0:$PORT
     healthCheckPath: /api/health
     envVars:
       - key: FLASK_ENV
