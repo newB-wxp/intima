@@ -24,7 +24,6 @@ from authlib.integrations.flask_client import OAuth
 from authlib.integrations.base_client.errors import (
     MismatchingStateError,
     OAuthError,
-    MissingCodeError,
 )
 
 import application.models as Models
@@ -92,11 +91,6 @@ def _handle_oauth_callback(provider_name: str):
                 state=request.args.get('state'),
                 code=request.args.get('code'),
             )
-        except MissingCodeError as e:
-            return jsonify(
-                message='Failed',
-                error=f'Authorization code missing from callback: {str(e)}',
-            ), 400
         except MismatchingStateError as e:
             return jsonify(
                 message='失败',
