@@ -308,6 +308,13 @@ def change_password():
     return render_template("account/profile.html", active_page="account")
 
 
+@views.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("website.home"))
+
+
 @views.route("/update-profile", methods=["POST"])
 @login_required
 def update_profile():

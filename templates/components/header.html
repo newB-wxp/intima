@@ -30,11 +30,11 @@
       <div class="header__user">
         <button class="header__user-toggle">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span>{{ current_user.username|default('Account') }}</span>
+          <span>{{ current_user.name|default('Account') }}</span>
         </button>
         <div class="header__user-dropdown">
           <a href="{{ url_for('website.orders') }}">My Orders</a>
-          <a href="{{ url_for('website.profile') }}">Profile</a>
+          <a href="{{ url_for('website.account') }}">Profile</a>
           <a href="{{ url_for('website.logout') }}">Logout</a>
         </div>
       </div>
@@ -62,7 +62,7 @@
   <a href="{{ url_for('website.cart') }}" class="mobile-menu__link">Cart</a>
   {% if current_user and current_user.is_authenticated %}
   <a href="{{ url_for('website.orders') }}" class="mobile-menu__link">My Orders</a>
-  <a href="{{ url_for('website.profile') }}" class="mobile-menu__link">Profile</a>
+  <a href="{{ url_for('website.account') }}" class="mobile-menu__link">Profile</a>
   <a href="{{ url_for('website.logout') }}" class="mobile-menu__link">Logout</a>
   {% else %}
   <a href="{{ url_for('website.login') }}" class="mobile-menu__link">Sign In</a>

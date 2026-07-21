@@ -14,7 +14,7 @@
       <div class="profile-card">
         <h2 class="profile-card-title">Account Information</h2>
 
-        <form class="profile-form" method="post" action="{{ url_for('account.update_profile') }}">
+        <form class="profile-form" method="post" action="{{ url_for('website.update_profile') }}">
           <div class="form-group">
             <label for="name" class="form-label">Name</label>
             <input type="text" id="name" name="name" class="form-input" value="{{ current_user.name or '' }}" placeholder="Your name">
@@ -70,7 +70,7 @@
               Connected
             </span>
             {% else %}
-            <a href="{{ url_for('auth.oauth_connect', provider='google') }}" class="btn btn-outline btn-sm">Connect</a>
+            <a href="{{ url_for('oauth_bp.google_login') }}" class="btn btn-outline btn-sm">Connect</a>
             {% endif %}
           </div>
 

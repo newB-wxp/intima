@@ -138,6 +138,9 @@ def _handle_oauth_callback(provider_name: str):
 
         if social:
             user = social.user
+            if name and not user.name:
+                user.name = name
+                user.save()
         else:
             # Check if user with this email already exists
             user = Models.User.objects(account__email=email, is_deleted=False).first()
