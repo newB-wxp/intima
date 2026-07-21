@@ -54,6 +54,9 @@ def create_app(config=None, app_name=None, blueprints=None):
         configure_admin(app)
         configure_oauth(app)
 
+    from application.commands import register_commands
+    register_commands(app)
+
     app.wsgi_app = ProxyFix(app.wsgi_app)
     return app
 

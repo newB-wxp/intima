@@ -1,6 +1,6 @@
 /* ==========================================================================
    Intima Wellness — Main Stylesheet
-   Brand: Intima | Palette: #6B21A8 (Deep Purple) + #F8F5F0 (Warm Grey)
+   Brand: Intima | Palette: #4A3F3A (Warm Charcoal) + #F9F7F5 (Warm Ivory)
    Tone: Minimalist luxury, Glossier/Aesop inspired
    ========================================================================== */
 
@@ -8,14 +8,14 @@
    CSS Custom Properties
    -------------------------------------------------------------------------- */
 :root {
-  --color-primary: #6B21A8;
-  --color-primary-light: #8B5CF6;
-  --color-primary-dark: #4C1D95;
-  --color-bg: #F8F5F0;
+  --color-primary: #4A3F3A;
+  --color-primary-light: #88A69B;
+  --color-primary-dark: #5A4F4A;
+  --color-bg: #F9F7F5;
   --color-white: #FFFFFF;
-  --color-text: #1A1A1A;
-  --color-text-light: #6B7280;
-  --color-border: #E5E0D8;
+  --color-text: #4A3F3A;
+  --color-text-light: #8A7F7A;
+  --color-border: #E5DDDB;
   --color-success: #059669;
   --color-error: #DC2626;
   --color-warning: #D97706;
@@ -222,7 +222,7 @@ strong {
 
 .btn-ghost:hover {
   color: var(--color-primary);
-  background: rgba(107,33,168,0.05);
+  background: rgba(74,63,58,0.05);
 }
 
 .btn-sm {
@@ -539,7 +539,7 @@ strong {
 }
 
 .header__user-dropdown a:hover {
-  background: rgba(107,33,168,0.05);
+  background: rgba(74,63,58,0.05);
   color: var(--color-primary);
 }
 
