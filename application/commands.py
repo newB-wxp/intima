@@ -22,12 +22,7 @@ def _ensure_admin(app):
             return
 
         password = secrets.token_urlsafe(12)
-        user = Models.User(name='Admin')
-        user.account = Models.UserAccount(
-            email=email,
-            password=password,
-            is_email_verified=True,
-        )
+        user = Models.User.create(email=email, password=password, name='Admin')
         user.roles = [USER_ROLE.ADMIN]
         user.save()
 
@@ -58,12 +53,7 @@ def register_commands(app):
             return
 
         password = secrets.token_urlsafe(12)
-        user = Models.User(name=name)
-        user.account = Models.UserAccount(
-            email=email,
-            password=password,
-            is_email_verified=True,
-        )
+        user = Models.User.create(email=email, password=password, name=name)
         user.roles = [USER_ROLE.ADMIN]
         user.save()
 
