@@ -18,7 +18,7 @@ import os
 import traceback
 
 import bcrypt
-from flask import Blueprint, request, jsonify, redirect, url_for, current_app, session
+from flask import Blueprint, jsonify, redirect, url_for, current_app
 from flask_login import login_user
 from authlib.integrations.flask_client import OAuth
 from authlib.integrations.base_client.errors import (
@@ -84,10 +84,7 @@ def _handle_oauth_callback(provider_name: str):
             return jsonify(message='Failed', error=f'Unknown provider: {provider_name}'), 400
 
         try:
-            token = oauth_client.authorize_access_token(
-                state=request.args.get('state'),
-                code=request.args.get('code'),
-            )
+            token = oauth_client.authorize_access_token()
         except MismatchingStateError as e:
             return jsonify(
                 message='失败',
