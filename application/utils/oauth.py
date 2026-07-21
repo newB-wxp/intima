@@ -78,7 +78,8 @@ def _handle_oauth_callback(provider_name: str):
         if not oauth_client:
             return jsonify(message='Failed', error=f'Unknown provider: {provider_name}'), 400
 
-        token = oauth_client.authorize_access_token()
+        redirect_uri = url_for(f'oauth_bp.{provider_name}_callback', _external=True)
+        token = oauth_client.authorize_access_token(redirect_uri=redirect_uri)
 
         if not token:
             return jsonify(message='Failed', error='Failed to obtain access token'), 400
@@ -141,7 +142,10 @@ def _handle_oauth_callback(provider_name: str):
             social.save()
 
             if avatar:
-                social.update_avatar(avatar)
+                try:
+                    social.update_avatar(avatar)
+                except Exception as e:
+                    current_app.logger.warning(f'OAuth avatar download failed for {provider_name}: {e}')
 
         login_user(user, remember=True)
         auth_token = user.generate_auth_token()
@@ -153,8 +157,8 @@ def _handle_oauth_callback(provider_name: str):
         )
 
     except Exception as e:
-        current_app.logger.error(f'OAuth {provider_name} error: {e}')
-        return jsonify(message='Failed', error='Authentication failed. Please try again.'), 500
+        current_app.logger.exception(f'OAuth {provider_name} callback failed')
+        return jsonify(message='Failed', error=str(e)), 500
 
 
 @oauth_bp.route('/google/login')
