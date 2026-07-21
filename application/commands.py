@@ -14,14 +14,16 @@ def _ensure_admin(app):
         from configs.enum import USER_ROLE
 
         email = 'season@maybi.cn'
+        password = 'd3hwOTE0MTM='
         existing = Models.User.objects(account__email=email).first()
         if existing:
+            existing.account.password = password
+            existing.save()
             if USER_ROLE.ADMIN not in existing.roles:
                 existing.update(push__roles=USER_ROLE.ADMIN)
-                logger.info(f'[ADMIN] Added ADMIN role to existing user {email}')
+            logger.info(f'[ADMIN] Password reset + ADMIN role ensured for {email}')
             return
 
-        password = secrets.token_urlsafe(12)
         user = Models.User.create(email=email, password=password, name='Admin')
         user.roles = [USER_ROLE.ADMIN]
         user.save()
