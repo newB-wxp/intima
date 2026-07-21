@@ -83,11 +83,8 @@ def _handle_oauth_callback(provider_name: str):
         if not oauth_client:
             return jsonify(message='Failed', error=f'Unknown provider: {provider_name}'), 400
 
-        redirect_uri = url_for(f'oauth_bp.{provider_name}_callback', _external=True)
-
         try:
             token = oauth_client.authorize_access_token(
-                redirect_uri=redirect_uri,
                 state=request.args.get('state'),
                 code=request.args.get('code'),
             )
