@@ -83,11 +83,14 @@ def _handle_oauth_callback(provider_name: str):
         redirect_uri = url_for(f'oauth_bp.{provider_name}_callback', _external=True)
 
         try:
-            token = oauth_client.authorize_access_token(redirect_uri=redirect_uri)
+            token = oauth_client.authorize_access_token(
+                redirect_uri=redirect_uri,
+                state=request.args.get('state')
+            )
         except MismatchingStateError:
             return jsonify(
-                message='Failed',
-                error='OAuth session expired, please try again',
+                message='失败',
+                error='OAuth 会话已过期，请重试',
             ), 400
 
         if not token:
