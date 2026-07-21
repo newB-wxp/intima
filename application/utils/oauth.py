@@ -15,11 +15,13 @@ Routes:
 
 import json
 import os
+import traceback
 
 import bcrypt
 from flask import Blueprint, request, jsonify, redirect, url_for, current_app, session
 from flask_login import login_user
 from authlib.integrations.flask_client import OAuth
+from authlib.integrations.base_client.errors import MismatchingStateError
 
 import application.models as Models
 from application.services.json_tmpl import get_user_info
@@ -79,7 +81,14 @@ def _handle_oauth_callback(provider_name: str):
             return jsonify(message='Failed', error=f'Unknown provider: {provider_name}'), 400
 
         redirect_uri = url_for(f'oauth_bp.{provider_name}_callback', _external=True)
-        token = oauth_client.authorize_access_token(redirect_uri=redirect_uri)
+
+        try:
+            token = oauth_client.authorize_access_token(redirect_uri=redirect_uri)
+        except MismatchingStateError:
+            return jsonify(
+                message='Failed',
+                error='OAuth session expired, please try again',
+            ), 400
 
         if not token:
             return jsonify(message='Failed', error='Failed to obtain access token'), 400
@@ -122,13 +131,11 @@ def _handle_oauth_callback(provider_name: str):
             user = Models.User.objects(account__email=email, is_deleted=False).first()
 
             if not user:
-                random_password_hash = bcrypt.generate_password_hash(
-                    os.urandom(16).hex()
-                ).decode('utf-8')
+                raw_password = os.urandom(16).hex()
                 user = Models.User.create(
                     email=email,
                     name=name,
-                    password=random_password_hash,
+                    password=raw_password,
                 )
 
             # Create SocialOAuth record
@@ -158,7 +165,11 @@ def _handle_oauth_callback(provider_name: str):
 
     except Exception as e:
         current_app.logger.exception(f'OAuth {provider_name} callback failed')
-        return jsonify(message='Failed', error=str(e)), 500
+        return jsonify(
+            message='Failed',
+            error=str(e),
+            traceback=traceback.format_exc(),
+        ), 500
 
 
 @oauth_bp.route('/google/login')
