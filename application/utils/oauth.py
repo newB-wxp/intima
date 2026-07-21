@@ -58,11 +58,7 @@ def init_oauth(app):
         client_id=app.config.get('FACEBOOK_APP_ID', ''),
         client_secret=app.config.get('FACEBOOK_APP_SECRET', ''),
         authorize_url='https://www.facebook.com/v18.0/dialog/oauth',
-        authorize_params=None,
         access_token_url='https://graph.facebook.com/v18.0/oauth/access_token',
-        access_token_params=None,
-        refresh_token_url=None,
-        redirect_uri=None,
         client_kwargs={'scope': 'email public_profile'},
     )
 
@@ -84,7 +80,12 @@ def _handle_oauth_callback(provider_name: str):
             return jsonify(message='Failed', error=f'Unknown provider: {provider_name}'), 400
 
         try:
-            token = oauth_client.authorize_access_token()
+            redirect_uri = url_for(
+                f'oauth_bp.{provider_name}_callback', _external=True
+            )
+            token = oauth_client.authorize_access_token(
+                redirect_uri=redirect_uri
+            )
         except MismatchingStateError as e:
             return jsonify(
                 message='失败',
