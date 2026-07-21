@@ -21,7 +21,11 @@ import bcrypt
 from flask import Blueprint, request, jsonify, redirect, url_for, current_app, session
 from flask_login import login_user
 from authlib.integrations.flask_client import OAuth
-from authlib.integrations.base_client.errors import MismatchingStateError
+from authlib.integrations.base_client.errors import (
+    MismatchingStateError,
+    OAuthError,
+    MissingCodeError,
+)
 
 import application.models as Models
 from application.services.json_tmpl import get_user_info
@@ -85,12 +89,28 @@ def _handle_oauth_callback(provider_name: str):
         try:
             token = oauth_client.authorize_access_token(
                 redirect_uri=redirect_uri,
-                state=request.args.get('state')
+                state=request.args.get('state'),
+                code=request.args.get('code'),
             )
-        except MismatchingStateError:
+        except MissingCodeError as e:
+            return jsonify(
+                message='Failed',
+                error=f'Authorization code missing from callback: {str(e)}',
+            ), 400
+        except MismatchingStateError as e:
             return jsonify(
                 message='失败',
                 error='OAuth 会话已过期，请重试',
+            ), 400
+        except OAuthError as e:
+            current_app.logger.exception(
+                f'OAuth {provider_name} token exchange failed'
+            )
+            return jsonify(
+                message='Failed',
+                error=f'OAuth token exchange error: {str(e)}',
+                provider_error=getattr(e, 'error', None),
+                provider_description=getattr(e, 'description', None),
             ), 400
 
         if not token:
