@@ -1,8 +1,42 @@
 # -*- coding: utf-8 -*-
 """Flask CLI management commands."""
 import secrets
+import logging
 import click
-from flask import current_app
+
+logger = logging.getLogger(__name__)
+
+
+def _ensure_admin(app):
+    """Auto-create the super admin at startup if not exists."""
+    with app.app_context():
+        import application.models as Models
+        from configs.enum import USER_ROLE
+
+        email = 'season@maybi.cn'
+        existing = Models.User.objects(account__email=email).first()
+        if existing:
+            if USER_ROLE.ADMIN not in existing.roles:
+                existing.update(push__roles=USER_ROLE.ADMIN)
+                logger.info(f'[ADMIN] Added ADMIN role to existing user {email}')
+            return
+
+        password = secrets.token_urlsafe(12)
+        user = Models.User(name='Admin')
+        user.account = Models.UserAccount(
+            email=email,
+            password=password,
+            is_email_verified=True,
+        )
+        user.roles = [USER_ROLE.ADMIN]
+        user.save()
+
+        logger.info('=' * 60)
+        logger.info(' SUPER ADMIN AUTO-CREATED ')
+        logger.info(f' Email:    {email}')
+        logger.info(f' Password: {password}')
+        logger.info(f' Roles:    {user.roles}')
+        logger.info('=' * 60)
 
 
 def register_commands(app):
@@ -41,3 +75,6 @@ def register_commands(app):
         click.echo(f'  Roles:    {user.roles}')
         click.echo('=' * 60)
         click.echo('Log in at /admin/login to access the backend.')
+
+    # Auto-create admin at startup (idempotent)
+    _ensure_admin(app)
