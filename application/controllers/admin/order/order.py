@@ -9,6 +9,7 @@ from application.extensions import admin
 import application.models as Models
 from flask import redirect, url_for, request, jsonify
 from application.controllers.admin import AdminView
+from ..i18n import CATEGORY_ZH
 from application.utils import redirect_url, groupby, Pagination
 
 
@@ -93,4 +94,4 @@ class OrderView(AdminView):
                             'message': "OK"})
 
 
-admin.add_view(OrderView(name=_('Order'), category=_('Order'), menu_icon_type="fa", menu_icon_value="bar-chart-o"))
+admin.add_view(OrderView(name='订单管理', category=CATEGORY_ZH['Order'], menu_icon_type="fa", menu_icon_value="bar-chart-o"))

@@ -8,6 +8,7 @@ from flask_admin import expose
 from flask_babel import gettext as _
 from application.extensions import admin
 from application.controllers.admin import AdminView
+from ..i18n import CATEGORY_ZH
 import application.services.jobs as Jobs
 import application.models as Models
 from application.utils import redirect_url
@@ -44,7 +45,7 @@ class BannerView(AdminView):
         banner.target = request.form.get('target').strip()
         banner.banner_type = request.form.get('banner_type').strip()
         banner.save()
-        flash('successfully updated')
+        flash(_('successfully updated'))
         return redirect(redirect_url())
 
     @expose('/move', methods=['PATCH'])
@@ -124,4 +125,4 @@ class BannerView(AdminView):
         return redirect(url_for('bannerview.index'))
 
 
-admin.add_view(BannerView(name='Banner', category='Content', menu_icon_type='fa', menu_icon_value='gift'))
+admin.add_view(BannerView(name='Banner管理', category=CATEGORY_ZH['Content'], menu_icon_type='fa', menu_icon_value='gift'))

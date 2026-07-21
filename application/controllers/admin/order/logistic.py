@@ -16,6 +16,7 @@ from flask import request, current_app, redirect, jsonify, Response, \
 from markupsafe import Markup
 import application.models as Models
 from application.controllers.admin import AdminView
+from ..i18n import CATEGORY_ZH
 from application.extensions import admin
 import application.services.jobs as Jobs
 from application.utils import Pagination, format_date

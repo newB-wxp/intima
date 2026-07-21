@@ -343,4 +343,4 @@ class I(AdminView):
         return jsonify(result)
 
 
-admin.add_view(I(name=_('Item Backend'), category=_('Content'), menu_icon_type="fa", menu_icon_value="gift"))
+admin.add_view(I(name='商品后台', category=CATEGORY_ZH['Content'], menu_icon_type="fa", menu_icon_value="gift"))
