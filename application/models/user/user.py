@@ -24,7 +24,7 @@ class SocialOAuth(db.Document):
     user = db.ReferenceField('User')
 
     site_uname = db.StringField(max_length=255)
-    access_token = db.StringField(required=True)
+    access_token = db.StringField()
     expire_date = db.DateTimeField()
     refresh_token = db.StringField()
 

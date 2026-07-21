@@ -137,7 +137,7 @@ def _handle_oauth_callback(provider_name: str):
                 site=provider_name,
                 site_uid=provider_uid,
                 site_uname=name,
-                access_token=token.get('access_token', ''),
+                access_token=token.get('access_token') or token.get('id_token', ''),
             )
             social.save()
 
