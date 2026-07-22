@@ -574,4 +574,4 @@ class N(AdminView):
 
 
 
-admin.add_view(N(name=_('Logistics Backend'), category='Logistics', menu_icon_type="fa", menu_icon_value="truck"))
+admin.add_view(N(name=_('Logistics Backend'), category=CATEGORY_ZH['Logistics'], menu_icon_type="fa", menu_icon_value="truck"))
