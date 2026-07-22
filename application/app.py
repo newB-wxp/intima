@@ -2,6 +2,13 @@
 
 import os
 import re
+import shutil
+
+# Force-clear stale bytecode cache to ensure latest .py is loaded
+_app_dir = os.path.dirname(os.path.abspath(__file__))
+for root, dirs, files in os.walk(_app_dir):
+    if '__pycache__' in dirs:
+        shutil.rmtree(os.path.join(root, '__pycache__'), ignore_errors=True)
 from redis import ConnectionPool
 from datetime import datetime
 from itsdangerous import TimestampSigner
@@ -270,7 +277,17 @@ def configure_error_handlers(app):
 
 def configure_admin(app):
     # flask-admin
+    import logging
+    logger = logging.getLogger(__name__)
     from application.controllers.admin.dashboard import IndexView
+
+    # Diagnostic: dump all registered views
+    view_list = [(v.name, getattr(v, '_category', '-'), v.__class__.__name__)
+                 for v in admin._views]
+    logger.warning(f"[ADMIN-DIAG] Total views registered: {len(view_list)}")
+    for i, (name, cat, cls) in enumerate(view_list):
+        logger.warning(f"[ADMIN-DIAG]   [{i}] {cls}: name='{name}' category='{cat}'")
+
     admin.name = u"Maybi后台"
     admin.base_template = 'admin/master2.html'
     admin.template_mode = 'bootstrap3'
