@@ -65,23 +65,26 @@ class MBModelView(PermissionModelView):
 
     def _apply_zh_labels(self, model):
         """Apply Chinese labels from i18n module to column_labels and form_labels."""
-        model_name = model.__name__
-        labels = dict(COMMON_LABELS)
-        if model_name in MODEL_LABELS:
-            labels.update(MODEL_LABELS[model_name])
+        try:
+            model_name = model.__name__
+            labels = dict(COMMON_LABELS)
+            if model_name in MODEL_LABELS:
+                labels.update(MODEL_LABELS[model_name])
 
-        field_names = list(model._fields.keys())
-        model_labels = {k: v for k, v in labels.items() if k in field_names}
+            field_names = list(model._fields.keys())
+            model_labels = {k: v for k, v in labels.items() if k in field_names}
 
-        if model_labels:
-            if not self.column_labels:
-                self.column_labels = {}
-            if not self.form_labels:
-                self.form_labels = {}
-            for k, v in model_labels.items():
-                if k in field_names and k not in self.column_labels:
-                    self.column_labels[k] = v
-                    self.form_labels[k] = v
+            if model_labels:
+                if not self.column_labels:
+                    self.column_labels = {}
+                if not self.form_labels:
+                    self.form_labels = {}
+                for k, v in model_labels.items():
+                    if k in field_names:
+                        self.column_labels[k] = v
+                        self.form_labels[k] = v
+        except Exception:
+            pass  # Graceful fallback: admin remains in English if i18n fails
 
 
 class PermissionMenuLink(Roled, MenuLink):

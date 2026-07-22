@@ -112,17 +112,16 @@ def configure_extensions(app):
     # flask-bcrypt
     bcrypt.init_app(app)
 
-    # flask-babel
-    babel.init_app(app)
-
     # Force Chinese locale for admin routes; use browser preference for frontend
-    @babel.localeselector
     def get_locale():
         if request.path.startswith('/admin'):
             return 'zh_Hans_CN'
         return request.accept_languages.best_match(
             app.config.get('ACCEPT_LANGUAGES', ['zh', 'en']),
             app.config.get('BABEL_DEFAULT_LOCALE', 'zh'))
+
+    # flask-babel 4.0: locale_selector must be passed to init_app, not as decorator
+    babel.init_app(app, locale_selector=get_locale)
 
     # flask-assets
     assets.init_app(app)
