@@ -8,7 +8,6 @@ from flask_admin import expose
 from flask_babel import gettext as _
 from application.extensions import admin
 from application.controllers.admin import AdminView
-from ..i18n import CATEGORY_ZH
 import application.services.jobs as Jobs
 import application.models as Models
 from application.utils import redirect_url
@@ -125,4 +124,4 @@ class BannerView(AdminView):
         return redirect(url_for('bannerview.index'))
 
 
-admin.add_view(BannerView(name=_('Banner Management'), category=CATEGORY_ZH['Content'], menu_icon_type='fa', menu_icon_value='gift'))
+admin.add_view(BannerView(name='横幅管理', category='内容管理', menu_icon_type='fa', menu_icon_value='gift'))

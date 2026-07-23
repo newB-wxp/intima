@@ -24,7 +24,7 @@ msgid "Upload successfully"
 msgstr "上传成功"
 
 msgid "Banner Management"
-msgstr "Banner管理"
+msgstr "横幅管理"
 
 # Dashboard
 msgid "Dashboard"
