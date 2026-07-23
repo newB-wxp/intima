@@ -61,31 +61,18 @@ class MBModelView(PermissionModelView):
             self._category = CATEGORY_ZH[self._category]
 
     def _apply_zh_labels(self, model):
-        """Apply Chinese labels from i18n module to column_labels and form_labels."""
-        import logging
-        logger = logging.getLogger(__name__)
-        try:
-            model_name = model.__name__
-            labels = dict(COMMON_LABELS)
-            if model_name in MODEL_LABELS:
-                labels.update(MODEL_LABELS[model_name])
+        """Apply Chinese labels from i18n module — unconditional, no silent failure."""
+        model_name = model.__name__
+        labels = dict(COMMON_LABELS)
+        if model_name in MODEL_LABELS:
+            labels.update(MODEL_LABELS[model_name])
 
-            field_names = list(model._fields.keys())
-            model_labels = {k: v for k, v in labels.items() if k in field_names}
+        field_names = list(model._fields.keys())
+        model_labels = {k: v for k, v in labels.items() if k in field_names}
 
-            if model_labels:
-                # Ensure dicts exist (Flask-Admin may pre-init them to {} or None)
-                if not isinstance(self.column_labels, dict):
-                    self.column_labels = {}
-                if not isinstance(self.form_labels, dict):
-                    self.form_labels = {}
-                for k, v in model_labels.items():
-                    if k in field_names:
-                        self.column_labels[k] = v
-                        self.form_labels[k] = v
-            logger.info("i18n: applied %d labels for %s", len(model_labels), model_name)
-        except Exception as e:
-            logger.warning("i18n: failed to apply labels for %s: %s", model.__name__, e)
+        # Direct overwrite — no isinstance check, no try/except
+        self.column_labels = model_labels
+        self.form_labels = dict(model_labels)
 
 
 class PermissionMenuLink(Roled, MenuLink):
