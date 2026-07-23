@@ -298,8 +298,8 @@ def configure_admin(app):
     admin.add_link(MenuLink(name='修改密码', endpoint='frontend.change_password'))
     admin.add_link(MenuLink(name='退出登录', endpoint='admin.logout'))
 
-    admin.init_app(app)
     admin.index_view = IndexView(name="仪表盘")
+    admin.init_app(app)
 
 
 def configure_oauth(app):
