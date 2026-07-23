@@ -54,6 +54,21 @@ msgstr "取消"
 msgid "Search"
 msgstr "搜索"
 
+msgid "Create"
+msgstr "创建"
+
+msgid "Edit"
+msgstr "编辑"
+
+msgid "Delete"
+msgstr "删除"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "Reset"
+msgstr "重置"
+
 msgid "Show All"
 msgstr "显示全部"
 
@@ -62,6 +77,16 @@ msgstr "上传"
 
 msgid "Close"
 msgstr "关闭"
+
+# Flask-Admin built-in
+msgid "Home"
+msgstr "首页"
+
+msgid "Logout"
+msgstr "退出登录"
+
+msgid "Change Password"
+msgstr "修改密码"
 
 # Order tabs
 msgid "PAID"

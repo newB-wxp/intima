@@ -62,6 +62,8 @@ class MBModelView(PermissionModelView):
 
     def _apply_zh_labels(self, model):
         """Apply Chinese labels from i18n module to column_labels and form_labels."""
+        import logging
+        logger = logging.getLogger(__name__)
         try:
             model_name = model.__name__
             labels = dict(COMMON_LABELS)
@@ -72,16 +74,18 @@ class MBModelView(PermissionModelView):
             model_labels = {k: v for k, v in labels.items() if k in field_names}
 
             if model_labels:
-                if not self.column_labels:
+                # Ensure dicts exist (Flask-Admin may pre-init them to {} or None)
+                if not isinstance(self.column_labels, dict):
                     self.column_labels = {}
-                if not self.form_labels:
+                if not isinstance(self.form_labels, dict):
                     self.form_labels = {}
                 for k, v in model_labels.items():
                     if k in field_names:
                         self.column_labels[k] = v
                         self.form_labels[k] = v
-        except Exception:
-            pass  # Graceful fallback: admin remains in English if i18n fails
+            logger.info("i18n: applied %d labels for %s", len(model_labels), model_name)
+        except Exception as e:
+            logger.warning("i18n: failed to apply labels for %s: %s", model.__name__, e)
 
 
 class PermissionMenuLink(Roled, MenuLink):
