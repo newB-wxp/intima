@@ -212,7 +212,7 @@ class I(AdminView):
         query = request.get_json()
         sku = query.get('sku')
         if "ADMIN" not in current_user.roles:
-            return jsonify(message="Failed", desc="sorry, u dont have permission to do this")
+            return jsonify(message="Failed", desc=str(_("Sorry, you don't have permission to do this.")))
         try:
             Models.ItemSpec.objects(sku=sku).delete()
             return jsonify(message="OK")

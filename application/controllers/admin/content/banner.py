@@ -116,7 +116,7 @@ class BannerView(AdminView):
             try:
                 board = Models.Board.objects(id=target).first()
             except ValidationError:
-                flash('Upload failed. please fill in a valid Board ID')
+                flash(_('Upload failed. Please fill in a valid Board ID.'))
                 return redirect(redirect_url())
 
         Models.Banner(banner_type=banner_type,
@@ -125,4 +125,4 @@ class BannerView(AdminView):
         return redirect(url_for('bannerview.index'))
 
 
-admin.add_view(BannerView(name='Banner管理', category=CATEGORY_ZH['Content'], menu_icon_type='fa', menu_icon_value='gift'))
+admin.add_view(BannerView(name=_('Banner Management'), category=CATEGORY_ZH['Content'], menu_icon_type='fa', menu_icon_value='gift'))

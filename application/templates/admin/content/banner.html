@@ -10,10 +10,10 @@
     <div class="col-lg-12">
         <div class="pull-right">
             <a href="{{ url_for('bannerview.upload') }}" type="button"
-                class="btn btn-warning">{{ _('+ Add New Banner') }}</a>
+                class="btn btn-warning">+ 添加新横幅</a>
         </div>
-        <h3 class="text-center">首页BANNERS</h3>
-        <p>NOTICE：可鼠标拉动图片调整排序。</p>
+        <h3 class="text-center">首页横幅</h3>
+        <p>提示：可鼠标拉动图片调整排序。</p>
     </div>
   <div class="drop-area" data-api="{{url_for('bannerview.move')}}">
   {% for banner in banners %}
@@ -24,7 +24,7 @@
             style="border:1px solid #d4d4d4">
           <div class="panel-heading">
             <span>
-                <strong>No.{{ banner.order }}:</strong> {{banner.title}}
+                <strong>序号 {{ banner.order }}:</strong> {{banner.title}}
             </span>
             <span class="label label-success">{{banner.target_obj.num_views}}</span>
             <span class="pull-right">
@@ -38,21 +38,21 @@
                     <input type="text" class="form-control"
                         name="from" id="datetimepicker"
                         data-date-format="yyyy-mm-dd hh:ii"
-                        placeholder="from: {{ banner.date_from }}">
+                        placeholder="开始: {{ banner.date_from }}">
                     <input type="text" class="form-control"
                         name="until" id="datetimepicker"
                         data-date-format="yyyy-mm-dd hh:ii"
-                        placeholder="until: {{ banner.date_until }}">
+                        placeholder="截止: {{ banner.date_until }}">
                     <input type="text" value="{{banner.target}}"
                         class="form-control"
-                        name="target" placeholder="target">
+                        name="target" placeholder="目标">
                     <input type="text" value="{{banner.banner_type}}"
                         class="form-control"
-                        name="banner_type" placeholder="BOARD or URL">
+                        name="banner_type" placeholder="看板或URL">
                 </div>
                 <input type="submit"
                 class="btn btn-success btn-sm"
-                value="{{ _('Submit') }}" />
+                value="提交" />
                 </form>
             </span>
           </div>

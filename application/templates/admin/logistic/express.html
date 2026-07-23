@@ -7,13 +7,13 @@
       {% elif k=='data' %}
       <table>
         <tr>
-          {% for n in ['status', 'context', 'time'] %}
+          {% for n in ['状态', '内容', '时间'] %}
             <th>{{n}}</th>
           {% endfor %}
         </tr>
         {% for logs in v %}
         <tr>
-          {% for n in ['status', 'context', 'time'] %}
+          {% for n in ['状态', '内容', '时间'] %}
             <td>{{logs[n]}}</td>
           {% endfor %}
         </tr>
@@ -22,4 +22,4 @@
       {% endif %}
     {% endfor %}
 </div>
-<button class="cancel btn btn-xs btn-info">Close</button>
+<button class="cancel btn btn-xs btn-info">关闭</button>

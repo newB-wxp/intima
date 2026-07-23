@@ -280,6 +280,7 @@ def configure_admin(app):
     import logging
     logger = logging.getLogger(__name__)
     from application.controllers.admin.dashboard import IndexView
+    from flask_admin.base import MenuLink
 
     # Diagnostic: dump all registered views
     view_list = [(v.name, getattr(v, '_category', '-'), v.__class__.__name__)
@@ -291,8 +292,14 @@ def configure_admin(app):
     admin.name = u"Maybi后台"
     admin.base_template = 'admin/master2.html'
     admin.template_mode = 'bootstrap3'
+
+    # Chinese menu links
+    admin.add_link(MenuLink(name='返回首页', url='/', target='_blank'))
+    admin.add_link(MenuLink(name='修改密码', endpoint='admin.change_password'))
+    admin.add_link(MenuLink(name='退出登录', endpoint='admin.logout'))
+
     admin.init_app(app)
-    admin.index_view = IndexView(name="Dashboard")
+    admin.index_view = IndexView(name="仪表盘")
 
 
 def configure_oauth(app):

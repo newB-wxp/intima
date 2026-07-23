@@ -13,7 +13,7 @@
           <strong>ID信息</strong><br>
           <span>Order ID: <a class="request-button" target="_blank" href="/admin/orderview/search?name={{m.order_id}}">{{m.order_id}}</a></span><br />
           <span>Logistic ID: {{m.id}}</span><br>
-          <span>partner No.: {{m.detail.partner_tracking_no}}</span><br />
+          <span>物流商单号: {{m.detail.partner_tracking_no}}</span><br />
         </li>
 
         <li class="timeline-inverted">
@@ -64,7 +64,7 @@
           <a class="logs-button btn btn-primary btn-xs" ng-click="openTracking()">物流详情</a><br>
           <div ng-show="trackingShown" class="dialog" style="left:-200px">
               <div ng-bind-html="tracking_history"></div>
-              <button class="btn btn-xs btn-info" ng-click="closeTracking()">Close</button>
+              <button class="btn btn-xs btn-info" ng-click="closeTracking()">关闭</button>
           </div>
 
         </li>
@@ -94,7 +94,7 @@
           <div class="pull-right">
               <div ng-show="operationShown" class="dialog" style="left:-200px">
                   <div ng-bind-html="operation_history"></div>
-                  <button class="btn btn-xs btn-info" ng-click="closeOperation()">Close</button>
+                  <button class="btn btn-xs btn-info" ng-click="closeOperation()">关闭</button>
               </div>
               <a class="btn btn-irregular btn-xs" ng-click="toggleIrrForm()">标记异常</a><br>
               <a class="btn btn-warning btn-xs" ng-click="toggleDelayForm(m.detail.status)">标记延缓</a><br>
@@ -161,7 +161,7 @@
 
       </div>
       <p ng-show="m.returned_entries != []">
-          Returned Entries:
+          退回条目:
       <p>
       <div class="entries row selectable" ng-repeat="e in m.returned_entries">
           <div class="imgs col-lg-6">
@@ -195,7 +195,7 @@
       </div>
   </div>
 
-    <modal-dialog show='irrFormShown' width="800px" dialog-title="Create Irregular Form" class="form">
+    <modal-dialog show='irrFormShown' width="800px" dialog-title="创建异常表单" class="form">
         <div class="form-group">
           <label for='irregular_type'>异常分类:</label>
           <select class="form-control" type='text' ng-model='selectedIrr' ng-options="k as v for (k,v) in IrrTypeNames"></select>
@@ -209,7 +209,7 @@
           <input class="form-control" type='text' ng-model='irrDesc' />
         </div>
         <p>
-          <button class="btn btn-md btn-success" ng-click="saveIrrForm(selectedIrr, selectedIrrReason, irrDesc)">Save</button>
+          <button class="btn btn-md btn-success" ng-click="saveIrrForm(selectedIrr, selectedIrrReason, irrDesc)">保存</button>
         </p>
         <table class="table">
             <caption>异常情况:</caption>
@@ -237,13 +237,13 @@
             </tbody>
         </table>
     </modal-dialog>
-    <modal-dialog show='delayFormShown' width="600px" dialog-title="Create Delay Form" class="form">
+    <modal-dialog show='delayFormShown' width="600px" dialog-title="创建延迟表单" class="form">
         <div class="form-group">
           <label for='us_tracking_no'>延缓原因:</label>
           <select class="form-control" type='text' ng-model='selectedItem' ng-options="type for type in delayTypes"></select>
         </div>
         <p>
-          <button class="btn btn-md btn-success" ng-click="saveDelayForm(selectedItem)">Save</button>
+          <button class="btn btn-md btn-success" ng-click="saveDelayForm(selectedItem)">保存</button>
         </p>
         <table class="table">
             <caption>历史延缓:</caption>

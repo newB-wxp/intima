@@ -7,14 +7,14 @@
             <div class="filter">
                 <div class="tabs">
                     <span class="tab available" ng-class="{on: status == curr_status}" ng-repeat="status in ['ALL','PENDING_REVIEW', 'TRANSFER_APPROVED','WAREHOUSE_IN','PAYMENT_RECEIVED','PROCESSING','SHIPPING','PORT_ARRIVED','RECEIVED','RETURNED']">
-                        <a ng-click="setStatus(status)">{{status}}</a>
+                        <a ng-click="setStatus(status)">{{statusLabels[status]}}</a>
                     </span>
                 </div>
             </div>
             <div class="form-group search-box">
                 <label>包裹ID/ CTN /MB No: </label>
                 <input class="form-control" ng-model="tempQuery">
-                <label>Extra: </label>
+                <label>扩展搜索: </label>
                 <select ng-model="tempExtra" class="form-control">
                     <option value="receiver">收件人</option>
                     <option value="order_id">订单号</option>
@@ -25,7 +25,7 @@
             <div class="form-group filter-box">
                 <label>物流商: </label>
                 <select class="form-control" ng-model='tempPartner' ng-options="p for p in availablePartner"></select>
-                <label>Channel: </label>
+                <label>渠道: </label>
                 <select class="form-control" ng-model='tempChannel' ng-options="c for c in ['US_EPAC', 'HKDHL']"></select>
                 <button class="btn btn-primary" ng-click="setParams(start, end)">搜索</button>
                 <button class="btn btn-default" ng-click="reset()">Reset</button>
@@ -38,8 +38,8 @@
                 <input type="date" class="form-control" ng-model="end"/>
             </div>
             <div class="form-group filter-box">
-                <button class="btn btn-success" ng-click="toggleAll()">Toggle All</button>
-                <button class="btn btn-success" ng-click="exportCSV()">Export as csv</button>
+                <button class="btn btn-success" ng-click="toggleAll()">全部展开/收起</button>
+                <button class="btn btn-success" ng-click="exportCSV()">导出CSV</button>
             </div>
         </div>
         <!-- /.col-lg-12 -->

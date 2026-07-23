@@ -49,11 +49,11 @@
     <form action="/admin/logisticview/file/upload" class="form-inline" method="post"  enctype="multipart/form-data">
       <div class="form-group">
         <input type="file" class="form-control" name="file">
-        <input type="submit" class="btn btn-success" value="Upload">
+        <input type="submit" class="btn btn-success" value="上传">
       </div>
-      <a class="btn btn-success" href="/admin/n/download?status={{delayStatus}}&delay_type={{curr_delay_type}}&delay_export=true">Export as csv</a>
+      <a class="btn btn-success" href="/admin/n/download?status={{delayStatus}}&delay_type={{curr_delay_type}}&delay_export=true">导出CSV</a>
       <button class="btn btn-primary" ng-click="setParams($event)">搜索</button>
-      <button class="btn btn-default" ng-click="reset();$event.preventDefault();">Reset</button>
+      <button class="btn btn-default" ng-click="reset();$event.preventDefault();">重置</button>
     </form>
     <hr />
     <div class="row">

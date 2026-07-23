@@ -23,7 +23,7 @@
                 <label>creator: </label>
                 <input class="form-control" ng-model="tempExtra">
                 <button class="btn btn-primary" ng-click="setParams()">搜索</button>
-                <button class="btn btn-default" ng-click="reset()">Reset</button>
+                <button class="btn btn-default" ng-click="reset()">重置</button>
             </div>
             <div class="form-group search-box">
                 <label>all: </label>
@@ -35,7 +35,7 @@
                 <a class="btn btn-success" ng-click="toggleAll()">Toggle All</a>
                 <a class="btn btn-success" ng-click="toggleModal()">创建商品</a>
             </div>
-            <modal-dialog show='modalShown' width="400px" dialog-title='Create new Item' on-close='logClose()' class="form">
+            <modal-dialog show='modalShown' width="400px" dialog-title='创建新商品' on-close='logClose()' class="form">
                 <div class="form-group">
                   <label for='primary_img'>原链接:</label>
                   <input class="form-control" type='url' ng-model='newItem.url' />

@@ -10,6 +10,19 @@ angular.module('sbAdminApp')
   .controller('LogisticsCtrl', function($scope, $http, Logistics, $stateParams) {
       $scope.tempParams = {};
       $scope.tempExtra = 'receiver';
+      $scope.curr_status = 'ALL';
+      $scope.statusLabels = {
+          'ALL': '全部',
+          'PENDING_REVIEW': '待审核',
+          'TRANSFER_APPROVED': '转运已批准',
+          'WAREHOUSE_IN': '已入库',
+          'PAYMENT_RECEIVED': '已付款',
+          'PROCESSING': '处理中',
+          'SHIPPING': '运输中',
+          'PORT_ARRIVED': '已到港',
+          'RECEIVED': '已签收',
+          'RETURNED': '已退回',
+      };
       $scope.searchParams = {};
       $scope.searchParams['query'] = $stateParams.item;
       $scope.availableSearchParams = [

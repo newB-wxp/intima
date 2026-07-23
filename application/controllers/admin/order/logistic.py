@@ -360,7 +360,7 @@ class N(AdminView):
 
         los = [Models.Logistic.objects(id=lid).first() for lid in lids]
         if not type(los) is list:
-            return jsonify(message="Failed", desc="please select more than 2 logistics")
+            return jsonify(message="Failed", desc="请选择至少2个物流单")
 
         start = 0
         for index in range(len(los)-1):
@@ -396,7 +396,7 @@ class N(AdminView):
     def split_entries(self):
         entries = request.json.get('selected')
         if not entries:
-            return jsonify(message="Failed", desc="Please select entries!")
+            return jsonify(message="Failed", desc="请选择至少一个条目")
 
         lids = []
         entry_ids = []
@@ -446,7 +446,7 @@ class N(AdminView):
             order.entries.append(new_entry)
             order.save()
         else:
-            return jsonify(message="Failed", desc="quantity error~~~~~~")
+            return jsonify(message="Failed", desc="拆分数量有误，请检查")
         return jsonify(message="OK", entries=[json.loads(json_util.dumps(entry_to_json(entry))) for entry in lo.entries])
 
 
@@ -533,7 +533,7 @@ class N(AdminView):
     @expose('/close/<lid>', methods=['GET'])
     def close(self, lid):
         lo = Models.Logistic.objects(id=lid).first()
-        lo.close("Closed By %s" % current_user.name)
+        lo.close(str(_("Closed by %(name)s", name=current_user.name)))
         return jsonify(message="OK")
 
     @expose('/logs/<ltype>/<lid>', methods=['GET'])
@@ -548,7 +548,7 @@ class N(AdminView):
         elif ltype == 'print':
             lo = Models.Logistic.objects(id=lid).first()
             if lo.is_closed:
-                return Response('this logistics id has been closed.')
+                return Response(_('This logistics ID has been closed.'))
             return self.render('admin/logistic/print_page.html', lo=lo)
 
     @expose('/refresh/<company>/<number>', methods=['GET'])

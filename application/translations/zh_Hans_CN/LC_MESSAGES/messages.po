@@ -7,6 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+# Banner
 msgid "successfully updated"
 msgstr "更新成功"
 
@@ -16,8 +17,136 @@ msgstr "日期格式无效，示例: 2014-07-30 20:00"
 msgid "Upload failed. If you select Board, please fill in Board ID, otherwise fill in URL."
 msgstr "上传失败。如果选择看板，请填写看板ID，否则请填写URL。"
 
+msgid "Upload failed. Please fill in a valid Board ID."
+msgstr "上传失败，请填写有效的看板ID。"
+
 msgid "Upload successfully"
 msgstr "上传成功"
 
+msgid "Banner Management"
+msgstr "Banner管理"
+
+# Dashboard
 msgid "Dashboard"
 msgstr "仪表盘"
+
+# Logistics
+msgid "Logistics Backend"
+msgstr "物流后台"
+
+msgid "Closed by %(name)s"
+msgstr "由 %(name)s 关闭"
+
+msgid "This logistics ID has been closed."
+msgstr "该物流编号已关闭。"
+
+# Item
+msgid "Sorry, you don't have permission to do this."
+msgstr "抱歉，您没有权限执行此操作。"
+
+# Common UI
+msgid "Submit"
+msgstr "提交"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Search"
+msgstr "搜索"
+
+msgid "Show All"
+msgstr "显示全部"
+
+msgid "Upload"
+msgstr "上传"
+
+msgid "Close"
+msgstr "关闭"
+
+# Order tabs
+msgid "PAID"
+msgstr "已支付"
+
+msgid "UNPAID"
+msgstr "未支付"
+
+msgid "PAYMENT_ABNORMAL"
+msgstr "支付异常"
+
+msgid "TESTER"
+msgstr "测试订单"
+
+msgid "IRREGULARITY"
+msgstr "异常订单"
+
+# Order labels
+msgid "物流状态"
+msgstr "物流状态"
+
+msgid "包裹商品总价"
+msgstr "包裹商品总价"
+
+msgid "商品件数"
+msgstr "商品件数"
+
+msgid "查看物流详情"
+msgstr "查看物流详情"
+
+# Auth / Error messages
+msgid "Please log in to access this page."
+msgstr "请登录以访问此页面。"
+
+msgid "Please reauthenticate to access this page."
+msgstr "请重新验证以访问此页面。"
+
+msgid "Permission Denied"
+msgstr "权限不足"
+
+msgid "Login required"
+msgstr "需要登录"
+
+msgid "Resource not found"
+msgstr "资源未找到"
+
+msgid "Internal server error"
+msgstr "服务器内部错误"
+
+# Logistics status labels
+msgid "PENDING_REVIEW"
+msgstr "待审核"
+
+msgid "TRANSFER_APPROVED"
+msgstr "转运已批准"
+
+msgid "WAREHOUSE_IN"
+msgstr "已入库"
+
+msgid "PAYMENT_RECEIVED"
+msgstr "已付款"
+
+msgid "PROCESSING"
+msgstr "处理中"
+
+msgid "SHIPPING"
+msgstr "运输中"
+
+msgid "PORT_ARRIVED"
+msgstr "已到港"
+
+msgid "RECEIVED"
+msgstr "已签收"
+
+msgid "RETURNED"
+msgstr "已退回"
+
+msgid "PENDING"
+msgstr "待处理"
+
+msgid "PROCESSED"
+msgstr "已处理"
+
+msgid "REJECTED"
+msgstr "已拒绝"
+
+msgid "WAITING_PROCESS"
+msgstr "待处理"
