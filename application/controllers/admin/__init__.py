@@ -53,10 +53,11 @@ class MBModelView(PermissionModelView):
                               lambda view, value: format_date(value)}
 
     def __init__(self, model, *args, **kwargs):
-        super(MBModelView, self).__init__(model, *args, **kwargs)
+        # Set column_labels BEFORE super().__init__ so that
+        # _refresh_cache (called inside super) picks up Chinese labels
+        # when caching _list_columns via get_column_name.
         self._apply_zh_labels(model)
-        # Re-run cache refresh so _list_columns etc. pick up translated labels
-        self._refresh_cache()
+        super(MBModelView, self).__init__(model, *args, **kwargs)
 
         # Translate category if in mapping
         if hasattr(self, '_category') and self._category in CATEGORY_ZH:
