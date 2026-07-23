@@ -55,6 +55,8 @@ class MBModelView(PermissionModelView):
     def __init__(self, model, *args, **kwargs):
         super(MBModelView, self).__init__(model, *args, **kwargs)
         self._apply_zh_labels(model)
+        # Re-run cache refresh so _list_columns etc. pick up translated labels
+        self._refresh_cache()
 
         # Translate category if in mapping
         if hasattr(self, '_category') and self._category in CATEGORY_ZH:
