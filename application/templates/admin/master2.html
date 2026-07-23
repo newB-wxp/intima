@@ -26,7 +26,12 @@
             </div><!-- /.navbar-header -->
 
             <ul class="nav navbar-top-links navbar-right">
-            {{ layout.menu_links() }}
+            {% set builtin_links = ['Home', 'Logout', 'Change Password'] %}
+            {% for link in admin_view.admin.menu_links() %}
+                {% if link.name not in builtin_links %}
+                    <li><a href="{{ link.get_url() }}">{{ link.name }}</a></li>
+                {% endif %}
+            {% endfor %}
             </ul><!-- /.navbar-top-links -->
 
             <div class="navbar-default sidebar" role="navigation">
