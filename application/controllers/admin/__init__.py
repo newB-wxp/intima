@@ -6,7 +6,7 @@ from flask_admin.contrib.mongoengine import ModelView
 from flask_admin import BaseView, expose, AdminIndexView
 from flask_admin.base import MenuLink
 from flask_babel import gettext as _
-from flask_login import current_user, logout_user
+from flask_login import current_user
 
 import application.models as Models
 from application.utils import format_date
@@ -95,23 +95,9 @@ class AuthenticatedMenuLink(MenuLink):
         return current_user.is_authenticated
 
 
-class LogoutView(Roled, BaseView):
-    """Provides the admin.logout endpoint for Flask-Admin."""
-
-    def __init__(self):
-        super(LogoutView, self).__init__(name="退出登录", endpoint="logout")
-
-    @expose('/')
-    def index(self):
-        logout_user()
-        return redirect(url_for('frontend.login'))
-
-
 class NotAuthenticatedMenuLink(MenuLink):
     def is_accessible(self):
         return not current_user.is_authenticated
 
-
-admin.add_view(LogoutView())
 
 from . import models, dashboard, content, order

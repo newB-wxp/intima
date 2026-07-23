@@ -296,7 +296,7 @@ def configure_admin(app):
     # Chinese menu links
     admin.add_link(MenuLink(name='返回首页', url='/', target='_blank'))
     admin.add_link(MenuLink(name='修改密码', endpoint='frontend.change_password'))
-    admin.add_link(MenuLink(name='退出登录', endpoint='admin.logout'))
+    admin.add_link(MenuLink(name='退出登录', endpoint='frontend.logout'))
 
     admin.index_view = IndexView(name="仪表盘")
     admin.init_app(app)
