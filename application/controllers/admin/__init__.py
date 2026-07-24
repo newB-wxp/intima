@@ -79,6 +79,11 @@ class MBModelView(PermissionModelView):
         self.column_labels = model_labels
         self.form_labels = dict(model_labels)
 
+        # Populate form_args so flask_mongoengine model_form() generates
+        # WTForm fields with Chinese labels (Flask-Admin 1.6.1 does NOT
+        # auto-merge form_labels into form_args for MongoEngine backends).
+        self.form_args = {k: {'label': v} for k, v in model_labels.items()}
+
 
 class PermissionMenuLink(Roled, MenuLink):
     def __init__(self, *args, **kwargs):
