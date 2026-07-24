@@ -366,7 +366,7 @@ class N(AdminView):
             if los[index+1].detail.cn_tracking_no != \
                     los[start].detail.cn_tracking_no or \
                     los[index+1].order != los[0].order:
-                return jsonify(message="Failed", desc="CTN and OrderID should be the same")
+                return jsonify(message="Failed", desc="CTN和订单号必须一致")
 
         for index in range(len(los)-1):
             map(
@@ -376,7 +376,7 @@ class N(AdminView):
             los[index].entries = []
             los[index].save()
             los[index].close(
-                'merged with %s' %
+                '与 %s 合并' %
                 los[index+1].id, datetime.datetime.utcnow()
             )
             los[index+1].save()

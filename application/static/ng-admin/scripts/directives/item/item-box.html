@@ -33,27 +33,27 @@
         <div class="row selectable">
           <div class="col-lg-4">
             <ul class="meta">
-                <li>item_id: {{item.meta._id}}</li>
-                <li>title: <strong>
+                <li>商品ID: {{item.meta._id}}</li>
+                <li>标题: <strong>
                     <a href="#" editable-text="item.meta.title">{{item.meta.title}}</a>
                     </strong>
                 </li>
-                <li>title_en:
+                <li>英文标题:
                     <a href="#" editable-text="item.meta.title_en">{{item.meta.title_en||'null'}}</a>
                 </li>
-                <li>main_category:
+                <li>主分类:
                     <a href="#" editable-text="item.meta.main_category">{{item.meta.main_category}}</a>
                 </li>
-                <li>sub_category:
+                <li>子分类:
                     <a href="#" editable-text="item.meta.sub_category">{{item.meta.sub_category}}</a>
                 </li>
-                <li>weight:
+                <li>重量:
                     <code>
                         <a href="#" editable-text="item.meta.weight">{{item.meta.weight}}</a> 克
                     </code>
                 </li>
-                <li>num_views: <code>{{item.meta.num_views}}</code></li>
-                <li>num_buy: <code>{{item.meta.num_buy}}</code></li>
+                <li>浏览数: <code>{{item.meta.num_views}}</code></li>
+                <li>购买数: <code>{{item.meta.num_buy}}</code></li>
             </ul>
           </div>
           <div class="col-lg-4">
@@ -65,17 +65,17 @@
                 <li>采购价￥:
                     <a href="#" editable-text="item.meta.china_price">{{item.meta.china_price}}</a>
                 </li>
-                <li>brand: <a href="#" editable-text="item.meta.brand">{{item.meta.brand}}</a></li>
-                <li>vendor:
+                <li>品牌: <a href="#" editable-text="item.meta.brand">{{item.meta.brand}}</a></li>
+                <li>供应商:
                     <a href="#" editable-text="item.meta.vendor">{{item.meta.vendor}}</a>
                 </li>
-                <li>attributes:
+                <li>属性:
                     <a href="#" editable-checklist="item.meta.attributes"
                         e-ng-options="s.value as s.text for s in ATTRS">
                         {{ showAttrs() }}
                     </a>
                 </li>
-                <li>creator: <code>{{item.meta.creator}}</code></li>
+                <li>创建者: <code>{{item.meta.creator}}</code></li>
                 <li>有效: <code><a href="#" editable-checkbox="item.meta.availability" e-title="上架?">{{item.meta.availability&& "上架" || "下架"}}</a></code></li>
               <button ng-click="saveItem(item)" class="btn btn-success btn-sm">保存</button>
             </ul>
@@ -98,7 +98,7 @@
       </div> <! --col-12-lg -->
 
       <div class="col-md-12">
-          description:
+          描述:
           <div class="ueditor" ng-model="item.meta.description"></div>
       </div>
 

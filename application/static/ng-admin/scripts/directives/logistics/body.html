@@ -11,8 +11,8 @@
         <li class="timeline-inverted">
           <div class="timeline-badge info"></div>
           <strong>ID信息</strong><br>
-          <span>Order ID: <a class="request-button" target="_blank" href="/admin/orderview/search?name={{m.order_id}}">{{m.order_id}}</a></span><br />
-          <span>Logistic ID: {{m.id}}</span><br>
+          <span>订单ID: <a class="request-button" target="_blank" href="/admin/orderview/search?name={{m.order_id}}">{{m.order_id}}</a></span><br />
+          <span>物流ID: {{m.id}}</span><br>
           <span>物流商单号: {{m.detail.partner_tracking_no}}</span><br />
         </li>
 
@@ -47,7 +47,7 @@
           <label class="logistic">
             <span class="value">{{m.detail.partner}}</span>
           </label><br />
-          <i>extra: {{m.detail.extra}}</i><br />
+          <i>额外: {{m.detail.extra}}</i><br />
           <span>用户选择物流: {{m.logistic_provider}}</span><br />
           <span>渠道类型: {{m.detail.channel}}</span><br />
         </li>
@@ -137,22 +137,22 @@
                 <li><input name="entry" type="checkbox" value="{{e.id}}:{{m.id}}">
                 <li><strong>{{e.item.title}}</strong></li>
                 <li><strong>{{e.item.title_en}}</strong></li>
-                <li><code>brand: {{e.item.brand}}</code></li>
-                <li><code>quantity: {{e.quantity}}</code>
+                <li><code>品牌: {{e.item.brand}}</code></li>
+                <li><code>数量: {{e.quantity}}</code>
                     <input ng-model="quantity" type="text" style="width:20px">
                     <button class="btn btn-xs btn-danger" ng-click="splitQuantity(quantity, e.id)">拆分</button>
                 </li>
-                <li>amount: {{e.amount_usd}}</li>
-                <li>weight: {{e.item.weight}}</li>
-                <li>shipping_info: {{e.shipping_info}}</li>
+                <li>金额: {{e.amount_usd}}</li>
+                <li>重量: {{e.item.weight}}</li>
+                <li>运输信息: {{e.shipping_info}}</li>
             </ul>
           </div>
 
           <div class="col-lg-3">
             <ul class="ul-horizontal">
-                <li>item_id: {{e.item.id}}</li>
-                <li>sku: {{e.spec.sku}}</li>
-                attributes:
+                <li>商品ID: {{e.item.id}}</li>
+                <li>SKU: {{e.spec.sku}}</li>
+                属性:
                 <li ng-repeat="(key, val) in e.spec.attributes">
                     <code>{{key}}: {{val}}</code>
                 </li>
@@ -172,21 +172,21 @@
                 <li><input name="entry" type="checkbox" value="{{e.id}}:{{m.id}}">
                 <li><strong>{{e.item.title}}</strong></li>
                 <li><strong>{{e.item.title_en}}</strong></li>
-                <li><code>brand: {{e.item.brand}}</code></li>
-                <li><code>quantity: {{e.quantity}}</code>
+                <li><code>品牌: {{e.item.brand}}</code></li>
+                <li><code>数量: {{e.quantity}}</code>
                     <input ng-model="quantity" type="text" style="width:20px">
                     <button class="btn btn-xs btn-danger" ng-click="splitQuantity(quantity, e.id)">拆分</button>
                 </li>
-                <li>amount: {{e.amount_usd}}</li>
-                <li>weight: {{e.item.weight}}</li>
+                <li>金额: {{e.amount_usd}}</li>
+                <li>重量: {{e.item.weight}}</li>
             </ul>
           </div>
 
           <div class="col-lg-3">
             <ul class="ul-horizontal">
-                <li>item_id: {{e.item.id}}</li>
-                <li>sku: {{e.spec.sku}}</li>
-                attributes:
+                <li>商品ID: {{e.item.id}}</li>
+                <li>SKU: {{e.spec.sku}}</li>
+                属性:
                 <li ng-repeat="(key, val) in e.spec.attributes">
                     <code>{{key}}: {{val}}</code>
                 </li>

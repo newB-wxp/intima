@@ -72,7 +72,7 @@ class OrderView(AdminView):
     def cancel_order(self, order_id):
         order = Models.Order.objects(id=order_id).first_or_404()
         reason = request.args.get(u'reason')
-        order.cancel_order(reason=reason or 'cancelled from content page')
+        order.cancel_order(reason=reason or '从内容页面取消')
         return redirect(url_for('.index'))
 
     @expose('/mall_info', methods=['GET', 'POST'])

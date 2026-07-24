@@ -175,3 +175,29 @@ msgstr "已拒绝"
 
 msgid "WAITING_PROCESS"
 msgstr "待处理"
+
+# Auth page labels
+msgid "Email address"
+msgstr "邮箱地址"
+
+msgid "Password"
+msgstr "密码"
+
+msgid "Log In"
+msgstr "登录"
+
+msgid "Confirm Password"
+msgstr "确认密码"
+
+msgid "User Name"
+msgstr "用户名"
+
+msgid "loading..."
+msgstr "加载中..."
+
+# Status message
+msgid "CTN and OrderID should be the same"
+msgstr "CTN和订单号必须一致"
+
+msgid "merged with %(id)s"
+msgstr "与 %(id)s 合并"
