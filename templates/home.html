@@ -7,11 +7,11 @@
 {% block content %}
 <!-- Hero Section -->
 <section class="hero">
-  <div class="hero-overlay"></div>
-  <div class="hero-content">
-    <h1 class="hero-heading">Wellness Redefined</h1>
-    <p class="hero-subheading">Premium intimate care, delivered discreetly.</p>
-    <div class="hero-cta">
+  <div class="hero__overlay"></div>
+  <div class="hero__content">
+    <h1 class="hero__title">Wellness Redefined</h1>
+    <p class="hero__subtitle">Premium intimate care, delivered discreetly.</p>
+    <div class="hero__cta">
       <a href="{{ url_for('shop.index') }}" class="btn btn-primary btn-lg">Explore Collection</a>
       <a href="{{ url_for('static.about') }}" class="btn btn-outline btn-lg">Learn More</a>
     </div>
@@ -21,7 +21,7 @@
 <!-- New Arrivals -->
 <section class="section section-new-arrivals">
   <div class="container">
-    <h2 class="section-heading">New Arrivals</h2>
+    <h2 class="section__title">New Arrivals</h2>
     <div class="product-grid">
       {% for product in products[:4] %}
         {{ product_card(product, show_badge=true) }}
@@ -33,7 +33,7 @@
 <!-- Best Sellers -->
 <section class="section section-best-sellers">
   <div class="container">
-    <h2 class="section-heading">Best Sellers</h2>
+    <h2 class="section__title">Best Sellers</h2>
     <div class="product-grid">
       {% for product in products[:4] %}
         {{ product_card(product, show_badge=true) }}
@@ -45,38 +45,38 @@
 <!-- Brand Values -->
 <section class="section section-brand-values">
   <div class="container">
-    <div class="values-grid">
-      <div class="value-card">
-        <div class="value-icon">
+    <div class="brand-values__grid">
+      <div class="brand-value">
+        <div class="brand-value__icon">
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="24" cy="24" r="22" stroke="#B8A69B" stroke-width="2" fill="none"/>
             <path d="M14 24l6 6 14-14" stroke="#B8A69B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-        <h3 class="value-title">Body-Safe Materials</h3>
-        <p class="value-desc">Medical-grade silicone, rigorously tested for your safety and peace of mind.</p>
+        <h3 class="brand-value__title">Body-Safe Materials</h3>
+        <p class="brand-value__desc">Medical-grade silicone, rigorously tested for your safety and peace of mind.</p>
       </div>
 
-      <div class="value-card">
-        <div class="value-icon">
+      <div class="brand-value">
+        <div class="brand-value__icon">
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="8" y="14" width="32" height="24" rx="3" stroke="#B8A69B" stroke-width="2" fill="none"/>
             <path d="M8 20h32" stroke="#B8A69B" stroke-width="2"/>
             <circle cx="24" cy="32" r="3" fill="#B8A69B"/>
           </svg>
         </div>
-        <h3 class="value-title">Discreet Shipping</h3>
-        <p class="value-desc">Plain packaging with no external branding. Your privacy is guaranteed.</p>
+        <h3 class="brand-value__title">Discreet Shipping</h3>
+        <p class="brand-value__desc">Plain packaging with no external branding. Your privacy is guaranteed.</p>
       </div>
 
-      <div class="value-card">
-        <div class="value-icon">
+      <div class="brand-value">
+        <div class="brand-value__icon">
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
             <polygon points="24,6 30,18 44,20 34,30 36,44 24,36 12,44 14,30 4,20 18,18" stroke="#B8A69B" stroke-width="2" fill="none"/>
           </svg>
         </div>
-        <h3 class="value-title">Premium Quality</h3>
-        <p class="value-desc">Designed to last, backed by our comprehensive 1-year manufacturer warranty.</p>
+        <h3 class="brand-value__title">Premium Quality</h3>
+        <p class="brand-value__desc">Designed to last, backed by our comprehensive 1-year manufacturer warranty.</p>
       </div>
     </div>
   </div>
@@ -86,27 +86,27 @@
 {% if blog_posts %}
 <section class="section section-blog-preview">
   <div class="container">
-    <h2 class="section-heading">The Intima Journal</h2>
-    <div class="blog-preview-grid">
+    <h2 class="section__title">The Intima Journal</h2>
+    <div class="blog-grid">
       {% for post in blog_posts[:3] %}
       <article class="blog-card">
         {% if post.image_url %}
-        <a href="{{ post.url }}" class="blog-card-image">
+        <a href="{{ post.url }}" class="blog-card__image">
           <img src="{{ post.image_url }}" alt="{{ post.title }}" loading="lazy">
         </a>
         {% endif %}
-        <div class="blog-card-body">
+        <div class="blog-card__body">
           {% if post.category %}
-          <span class="blog-card-category">{{ post.category }}</span>
+          <span class="blog-card__category">{{ post.category }}</span>
           {% endif %}
-          <h3 class="blog-card-title">
+          <h3 class="blog-card__title">
             <a href="{{ post.url }}">{{ post.title }}</a>
           </h3>
           {% if post.published_at %}
-          <time class="blog-card-date" datetime="{{ post.published_at }}">{{ post.published_at }}</time>
+          <time class="blog-card__date" datetime="{{ post.published_at }}">{{ post.published_at }}</time>
           {% endif %}
-          <p class="blog-card-excerpt">{{ post.excerpt or post.content[:150] }}</p>
-          <a href="{{ post.url }}" class="blog-card-link">Read More</a>
+          <p class="blog-card__excerpt">{{ post.excerpt or post.content[:150] }}</p>
+          <a href="{{ post.url }}" class="blog-card__link">Read More</a>
         </div>
       </article>
       {% endfor %}
@@ -118,11 +118,11 @@
 <!-- Newsletter -->
 <section class="section section-newsletter">
   <div class="container">
-    <div class="newsletter-inner">
-      <h2 class="newsletter-heading">Stay in the Know</h2>
-      <p class="newsletter-subheading">Sign up for exclusive offers, new arrivals, and wellness insights.</p>
-      <form class="newsletter-form" action="#" method="post">
-        <input type="email" class="newsletter-input" placeholder="Your email address" required>
+    <div class="newsletter__inner">
+      <h2 class="newsletter__heading">Stay in the Know</h2>
+      <p class="newsletter__subheading">Sign up for exclusive offers, new arrivals, and wellness insights.</p>
+      <form class="newsletter__form" action="#" method="post">
+        <input type="email" class="newsletter__input" placeholder="Your email address" required>
         <button type="submit" class="btn btn-primary">Subscribe</button>
       </form>
     </div>

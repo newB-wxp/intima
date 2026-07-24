@@ -6,12 +6,12 @@
 {% block main %}
 <section class="section section-error">
   <div class="container">
-    <div class="error-content">
-      <h1 class="error-code">404</h1>
-      <h2 class="error-title">Oops! Page not found</h2>
-      <p class="error-description">The page you're looking for doesn't exist or has been moved. Try searching or head back home.</p>
-      <form class="error-search" action="{{ url_for('shop.search') }}" method="get">
-        <div class="error-search-input">
+    <div class="error__content">
+      <h1 class="error__code">404</h1>
+      <h2 class="error__title">Oops! Page not found</h2>
+      <p class="error__description">The page you're looking for doesn't exist or has been moved. Try searching or head back home.</p>
+      <form class="error__search" action="{{ url_for('shop.search') }}" method="get">
+        <div class="error__search-input">
           <input type="search" name="q" class="form-input" placeholder="Search products..." aria-label="Search">
           <button type="submit" class="btn btn-primary">Search</button>
         </div>

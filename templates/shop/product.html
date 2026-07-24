@@ -7,12 +7,12 @@
 {% block main %}
 <!-- Breadcrumb -->
 <nav class="breadcrumb" aria-label="Breadcrumb">
-  <ol class="breadcrumb-list">
-    <li class="breadcrumb-item"><a href="/">Home</a></li>
-    <li class="breadcrumb-separator">/</li>
-    <li class="breadcrumb-item"><a href="{{ url_for('shop.category', slug=product.category_slug) }}">{{ product.category_name }}</a></li>
-    <li class="breadcrumb-separator">/</li>
-    <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+  <ol class="breadcrumb__list">
+    <li class="breadcrumb__item"><a href="/">Home</a></li>
+    <li class="breadcrumb__separator">/</li>
+    <li class="breadcrumb__item"><a href="{{ url_for('shop.category', slug=product.category_slug) }}">{{ product.category_name }}</a></li>
+    <li class="breadcrumb__separator">/</li>
+    <li class="breadcrumb__item active" aria-current="page">{{ product.name }}</li>
   </ol>
 </nav>
 
@@ -20,14 +20,14 @@
   <div class="container">
     <div class="product-detail">
       <!-- Left Column — Images -->
-      <div class="product-detail-gallery">
-        <div class="product-detail-main-image">
-          <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-detail-img">
+      <div class="product-detail__gallery">
+        <div class="product-detail__main-image">
+          <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-detail__main-image">
         </div>
         {% if product.images and product.images|length > 1 %}
-        <div class="product-detail-thumbnails">
+        <div class="product-detail__thumbnails">
           {% for image in product.images %}
-          <button class="product-detail-thumb {% if loop.first %}active{% endif %}" type="button"
+          <button class="product-detail__thumb {% if loop.first %}active{% endif %}" type="button"
                   data-image="{{ image.url }}" aria-label="View image {{ loop.index }}">
             <img src="{{ image.thumbnail_url or image.url }}" alt="{{ product.name }} image {{ loop.index }}" loading="lazy">
           </button>
@@ -37,19 +37,19 @@
       </div>
 
       <!-- Right Column — Info -->
-      <div class="product-detail-info">
-        <h1 class="product-detail-name">{{ product.name }}</h1>
+      <div class="product-detail__info">
+        <h1 class="product-detail__title">{{ product.name }}</h1>
 
         <!-- Price -->
-        <div class="product-detail-pricing">
-          <span class="product-detail-price">{{ product.price | currency }}</span>
+        <div class="product-detail__pricing">
+          <span class="product-detail__price">{{ product.price | currency }}</span>
           {% if product.compare_price and product.compare_price > product.price %}
-          <span class="product-detail-compare-price">{{ product.compare_price | currency }}</span>
+          <span class="product-detail__compare-price">{{ product.compare_price | currency }}</span>
           {% endif %}
         </div>
 
         <!-- Rating -->
-        <div class="product-detail-rating">
+        <div class="product-detail__rating">
           <div class="stars" aria-label="{{ product.rating }} out of 5 stars">
             {% for i in range(1, 6) %}
               {% if i <= product.rating|int %}
@@ -62,20 +62,20 @@
             {% endfor %}
           </div>
           {% if product.review_count %}
-          <span class="product-detail-review-count">({{ product.review_count }} reviews)</span>
+          <span class="product-detail__review-count">({{ product.review_count }} reviews)</span>
           {% endif %}
         </div>
 
         <!-- Short Description -->
         {% if product.short_description %}
-        <p class="product-detail-description">{{ product.short_description }}</p>
+        <p class="product-detail__description">{{ product.short_description }}</p>
         {% endif %}
 
         <!-- Feature Tags -->
-        <div class="product-detail-tags">
+        <div class="product-detail__tags">
           {% if product.features %}
             {% for feature in product.features %}
-            <span class="product-tag">
+            <span class="product-detail__tag">
               {% if feature == 'silicone' or feature == 'Silicone' %}
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 6v12" stroke="currentColor" stroke-width="2"/></svg>
               {% elif feature == 'waterproof' or feature == 'Waterproof' %}
@@ -92,27 +92,27 @@
         </div>
 
         <!-- Add to Cart -->
-        <form class="product-detail-cart" action="#" method="post">
+        <form class="product-detail__cart" action="#" method="post">
           <div class="quantity-selector">
-            <button type="button" class="quantity-btn quantity-minus" aria-label="Decrease quantity">−</button>
-            <input type="number" class="quantity-input" value="1" min="1" max="99" aria-label="Quantity">
-            <button type="button" class="quantity-btn quantity-plus" aria-label="Increase quantity">+</button>
+            <button type="button" class="quantity-selector__btn quantity-selector__minus" aria-label="Decrease quantity">−</button>
+            <input type="number" class="quantity-selector__input" value="1" min="1" max="99" aria-label="Quantity">
+            <button type="button" class="quantity-selector__btn quantity-selector__plus" aria-label="Increase quantity">+</button>
           </div>
-          <button type="button" class="btn btn-primary btn-lg add-to-cart-btn" data-product-id="{{ product.id }}">
+          <button type="button" class="btn btn-primary btn-lg product-detail__add-to-cart" data-product-id="{{ product.id }}">
             Add to Cart
           </button>
         </form>
 
-        <p class="shipping-note">Free discreet shipping on orders over $49</p>
+        <p class="product-detail__shipping-note">Free discreet shipping on orders over $49</p>
       </div>
     </div>
 
     <!-- Product Details -->
-    <div class="product-detail-extra">
+    <div class="product-detail__extra">
       {% if product.description %}
-      <div class="product-description">
-        <h2 class="product-section-title">Product Details</h2>
-        <div class="product-description-content">
+      <div class="product-detail__description-block">
+        <h2 class="product-detail__section-title">Product Details</h2>
+        <div class="product-detail__description-content">
           {{ product.description | safe }}
         </div>
       </div>
@@ -120,9 +120,9 @@
 
       <!-- Specs Table -->
       {% if product.specs %}
-      <div class="product-specs">
-        <h2 class="product-section-title">Specifications</h2>
-        <table class="specs-table">
+      <div class="product-detail__specs">
+        <h2 class="product-detail__section-title">Specifications</h2>
+        <table class="product-detail__specs-table">
           <tbody>
             {% for key, value in product.specs.items() %}
             <tr>
@@ -138,8 +138,8 @@
 
     <!-- Related Products -->
     {% if related_products %}
-    <div class="product-related">
-      <h2 class="section-heading">You May Also Like</h2>
+    <div class="product-detail__related">
+      <h2 class="section__title">You May Also Like</h2>
       <div class="product-grid">
         {% for product in related_products[:4] %}
           {{ product_card(product, show_badge=false) }}

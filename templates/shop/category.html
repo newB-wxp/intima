@@ -7,33 +7,33 @@
 {% block main %}
 <!-- Breadcrumb -->
 <nav class="breadcrumb" aria-label="Breadcrumb">
-  <ol class="breadcrumb-list">
-    <li class="breadcrumb-item"><a href="/">Home</a></li>
-    <li class="breadcrumb-separator">/</li>
-    <li class="breadcrumb-item active" aria-current="page">{{ category.name }}</li>
+  <ol class="breadcrumb__list">
+    <li class="breadcrumb__item"><a href="/">Home</a></li>
+    <li class="breadcrumb__separator">/</li>
+    <li class="breadcrumb__item active" aria-current="page">{{ category.name }}</li>
   </ol>
 </nav>
 
 <section class="section section-category">
   <div class="container">
-    <div class="category-header">
-      <h1 class="category-title">{{ category.name }}</h1>
-      <p class="category-count">{{ products|length }} items</p>
+    <div class="category__header">
+      <h1 class="category__title">{{ category.name }}</h1>
+      <p class="category__count">{{ products|length }} items</p>
     </div>
 
-    <div class="category-layout">
+    <div class="category__layout">
       <!-- Filter Sidebar -->
-      <aside class="filter-sidebar">
-        <div class="filter-toggle-mobile">
-          <button class="btn btn-outline filter-toggle-btn" type="button" aria-expanded="false">
+      <aside class="filter__sidebar">
+        <div class="filter__toggle-mobile">
+          <button class="btn btn-outline filter__toggle-btn" type="button" aria-expanded="false">
             Filters
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
 
-        <div class="filter-panel" id="filterPanel">
+        <div class="filter__panel" id="filterPanel">
           <!-- Sort -->
-          <div class="filter-sort-mobile">
+          <div class="filter__sort-mobile">
             <label for="sortSelect">Sort by</label>
             <select id="sortSelect" class="form-select">
               <option value="price_asc">Price: Low to High</option>
@@ -44,44 +44,44 @@
           </div>
 
           <!-- Price Range -->
-          <div class="filter-group">
-            <h3 class="filter-group-title">Price Range</h3>
-            <div class="filter-price-inputs">
-              <input type="number" class="form-input form-input-sm" placeholder="Min" min="0" aria-label="Minimum price">
-              <span class="filter-price-separator">—</span>
-              <input type="number" class="form-input form-input-sm" placeholder="Max" min="0" aria-label="Maximum price">
+          <div class="filter__group">
+            <h3 class="filter__group-title">Price Range</h3>
+            <div class="filter__price-inputs">
+              <input type="number" class="form-input form__input--sm" placeholder="Min" min="0" aria-label="Minimum price">
+              <span class="filter__price-inputs">—</span>
+              <input type="number" class="form-input form__input--sm" placeholder="Max" min="0" aria-label="Maximum price">
             </div>
           </div>
 
           <!-- Material -->
-          <div class="filter-group">
-            <h3 class="filter-group-title">Material</h3>
-            <ul class="filter-checkbox-list">
-              <li><label class="checkbox-label"><input type="checkbox" name="material" value="silicone"> Silicone</label></li>
-              <li><label class="checkbox-label"><input type="checkbox" name="material" value="glass"> Glass</label></li>
-              <li><label class="checkbox-label"><input type="checkbox" name="material" value="metal"> Metal</label></li>
-              <li><label class="checkbox-label"><input type="checkbox" name="material" value="abs"> ABS Plastic</label></li>
+          <div class="filter__group">
+            <h3 class="filter__group-title">Material</h3>
+            <ul class="filter__checkbox-list">
+              <li><label class="form__checkbox-label"><input type="checkbox" name="material" value="silicone"> Silicone</label></li>
+              <li><label class="form__checkbox-label"><input type="checkbox" name="material" value="glass"> Glass</label></li>
+              <li><label class="form__checkbox-label"><input type="checkbox" name="material" value="metal"> Metal</label></li>
+              <li><label class="form__checkbox-label"><input type="checkbox" name="material" value="abs"> ABS Plastic</label></li>
             </ul>
           </div>
 
           <!-- Rating -->
-          <div class="filter-group">
-            <h3 class="filter-group-title">Rating</h3>
-            <ul class="filter-checkbox-list">
-              <li><label class="checkbox-label"><input type="checkbox" name="rating" value="4"> 4★ &amp; up</label></li>
-              <li><label class="checkbox-label"><input type="checkbox" name="rating" value="3"> 3★ &amp; up</label></li>
+          <div class="filter__group">
+            <h3 class="filter__group-title">Rating</h3>
+            <ul class="filter__checkbox-list">
+              <li><label class="form__checkbox-label"><input type="checkbox" name="rating" value="4"> 4★ &amp; up</label></li>
+              <li><label class="form__checkbox-label"><input type="checkbox" name="rating" value="3"> 3★ &amp; up</label></li>
             </ul>
           </div>
 
-          <button class="btn btn-primary filter-apply-btn" type="button">Apply Filters</button>
+          <button class="btn btn-primary filter__apply-btn" type="button">Apply Filters</button>
         </div>
       </aside>
 
       <!-- Product Grid -->
-      <div class="category-main">
+      <div class="category__main">
         <!-- Sort (Desktop) -->
-        <div class="category-sort">
-          <label for="sortSelectDesktop" class="sort-label">Sort by</label>
+        <div class="category__sort">
+          <label for="sortSelectDesktop" class="category__sort-label">Sort by</label>
           <select id="sortSelectDesktop" class="form-select">
             <option value="price_asc">Price: Low to High</option>
             <option value="price_desc">Price: High to Low</option>
@@ -90,7 +90,7 @@
           </select>
         </div>
 
-        <div class="product-grid product-grid-3col">
+        <div class="product-grid product-grid--3col">
           {% for product in products %}
             {{ product_card(product, show_badge=true) }}
           {% endfor %}
@@ -100,24 +100,24 @@
         {% if pagination and pagination.pages > 1 %}
         <nav class="pagination" aria-label="Page navigation">
           {% if pagination.has_prev %}
-          <a href="{{ url_for('shop.category', slug=category.slug, page=pagination.prev_num) }}" class="pagination-item pagination-prev">Previous</a>
+          <a href="{{ url_for('shop.category', slug=category.slug, page=pagination.prev_num) }}" class="pagination__item pagination__prev">Previous</a>
           {% else %}
-          <span class="pagination-item pagination-prev disabled">Previous</span>
+          <span class="pagination__item pagination__prev disabled">Previous</span>
           {% endif %}
 
           {% for page_num in pagination.iter_pages() %}
             {% if page_num %}
               <a href="{{ url_for('shop.category', slug=category.slug, page=page_num) }}"
-                 class="pagination-item {% if page_num == pagination.page %}active{% endif %}">{{ page_num }}</a>
+                 class="pagination__item {% if page_num == pagination.page %}active{% endif %}">{{ page_num }}</a>
             {% else %}
-              <span class="pagination-item pagination-ellipsis">…</span>
+              <span class="pagination__item pagination__ellipsis">…</span>
             {% endif %}
           {% endfor %}
 
           {% if pagination.has_next %}
-          <a href="{{ url_for('shop.category', slug=category.slug, page=pagination.next_num) }}" class="pagination-item pagination-next">Next</a>
+          <a href="{{ url_for('shop.category', slug=category.slug, page=pagination.next_num) }}" class="pagination__item pagination__next">Next</a>
           {% else %}
-          <span class="pagination-item pagination-next disabled">Next</span>
+          <span class="pagination__item pagination__next disabled">Next</span>
           {% endif %}
         </nav>
         {% endif %}
