@@ -679,7 +679,6 @@ strong {
 .navbar-inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   height: 100%;
   max-width: var(--max-width);
   margin: 0 auto;
@@ -689,6 +688,7 @@ strong {
 .navbar-left {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
   flex: 1;
 }
@@ -697,12 +697,13 @@ strong {
   display: flex;
   align-items: center;
   gap: 2.25rem;
+  transform: translateX(-14px);
 }
 
 .nav-link {
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   font-weight: 500;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--color-text);
   transition: color var(--transition-base);
