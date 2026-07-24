@@ -1468,6 +1468,12 @@ strong {
   color: var(--color-white);
 }
 
+.footer__note {
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.6);
+}
+
 .footer__bottom {
   margin-top: 3rem;
   padding: 1.5rem;
@@ -1475,6 +1481,23 @@ strong {
   text-align: center;
   font-size: 0.8125rem;
   color: rgba(255,255,255,0.5);
+}
+
+/* ── Footer selection / focus visibility on dark bg (#4A3F3A) ── */
+.footer ::selection,
+.footer ::-moz-selection {
+  background: #B8A69B;
+  color: #1A1310;
+}
+
+.footer__link:focus-visible {
+  outline: 2px solid #B8A69B;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.footer__link:active {
+  color: #D4C5B8;
 }
 
 /* --------------------------------------------------------------------------
