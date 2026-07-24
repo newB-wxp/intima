@@ -471,6 +471,11 @@ strong {
   transition: color var(--transition-base);
 }
 
+.header__icon svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
 .header__icon:hover {
   color: var(--color-primary);
 }
