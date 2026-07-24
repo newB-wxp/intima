@@ -20,7 +20,7 @@
       <a href="{{ url_for('blog.list_posts', category=post.category) }}">{{ post.category|replace('-', ' ')|title }}</a>
       {% endif %}
       <span class="breadcrumb__separator">&rsaquo;</span>
-      <span class="current">{{ post.title }}</span>
+      <span class="breadcrumb__current">{{ post.title }}</span>
     </nav>
 
     <!-- Header -->

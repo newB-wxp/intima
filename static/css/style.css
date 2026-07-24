@@ -1774,6 +1774,9 @@ img[data-src].lazy-loaded {
   margin: 0 0.25rem;
   color: #ccc;
 }
+.breadcrumb__current {
+  color: #333;
+}
 
 /* ---- Quantity Selector ---- */
 .quantity-selector {
