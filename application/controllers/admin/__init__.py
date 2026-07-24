@@ -17,13 +17,15 @@ from .i18n import COMMON_LABELS, MODEL_LABELS, CATEGORY_ZH
 class Roled(object):
 
     def is_accessible(self):
+        if not current_user.is_authenticated:
+            return False
         roles_accepted = getattr(self, '_permission', 'admin')
 
         m = Models.BackendPermission.objects(
             name=roles_accepted).first()
         if 'ADMIN' in current_user.roles:
             return True
-        if m.roles:
+        if m and m.roles:
             accessible = any(
                 [role in current_user.roles for role in m.roles]
             )
