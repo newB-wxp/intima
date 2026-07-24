@@ -688,7 +688,7 @@ strong {
 .navbar-left {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 1rem;
   flex: 1;
 }
@@ -697,7 +697,6 @@ strong {
   display: flex;
   align-items: center;
   gap: 2.25rem;
-  transform: translateX(-14px);
 }
 
 .nav-link {
