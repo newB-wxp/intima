@@ -322,6 +322,7 @@ MODEL_LABELS = {
     'Role': {
         'name': '角色名称',
         'description': '角色描述',
+        'password_hash': '密码哈希',
     },
     'User': {
         'name': '用户名',

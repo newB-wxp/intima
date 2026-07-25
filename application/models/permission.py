@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from application.extensions import db
+from application.extensions import db, bcrypt
 from configs.enum import USER_ROLE
 
 
@@ -18,6 +18,15 @@ class BackendPermission(db.Document):
 class Role(db.Document):
     name = db.StringField(max_length=80, unique=True)
     description = db.StringField(max_length=255)
+    password_hash = db.StringField(max_length=255)
+
+    def set_password(self, password):
+        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        if self.password_hash is None:
+            return False
+        return bcrypt.check_password_hash(self.password_hash, password)
 
     def __unicode__(self):
         return self.name

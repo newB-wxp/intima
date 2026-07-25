@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from wtforms import PasswordField
+
 from flask_admin.babel import gettext
 from flask_admin.contrib.mongoengine.filters import BaseMongoEngineFilter
 from application.extensions import admin
@@ -29,7 +31,19 @@ class LogView(MBModelView):
     }
 
 
-admin.add_view(MBModelView(Models.Role, category=CATEGORY_ZH['Admin'], name='角色'))
+class RoleView(MBModelView):
+    form_extra_fields = {
+        'password': PasswordField('密码'),
+    }
+    form_excluded_columns = ('password_hash',)
+    column_exclude_list = ('password_hash',)
+
+    def on_model_change(self, form, model, is_created):
+        if form.password.data:
+            model.set_password(form.password.data)
+
+
+admin.add_view(RoleView(Models.Role, category=CATEGORY_ZH['Admin'], name='角色'))
 admin.add_view(MBModelView(Models.BackendPermission, category=CATEGORY_ZH['Admin'], name='后台权限'))
 
 admin.add_view(UserView(Models.User, category=CATEGORY_ZH['User'], endpoint='usermodel', name='用户'))
