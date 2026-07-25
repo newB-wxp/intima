@@ -51,30 +51,41 @@ class BackendPermissionView(MBModelView):
     def scaffold_form(self):
         form_class = super().scaffold_form()
         role_choices = [(str(r.id), r.name) for r in Models.Role.objects.all()]
-        form_class.roles = SelectMultipleField(
-            '所属角色',
-            choices=role_choices,
-            coerce=str,
-            widget=wtf_widgets.ListWidget(prefix_label=False),
-            option_widget=wtf_widgets.CheckboxInput(),
-            description='勾选拥有此权限的角色。',
-        )
-        return form_class
+
+        # Create a subclass so that WTForms' FormMeta properly registers
+        # the roles field into _unbound_fields.  Monkey-patching
+        #   form_class.roles = SelectMultipleField(...)
+        # after class creation does NOT update _unbound_fields, causing
+        # the field to be invisible in render_form_fields().
+        class _BackendPermissionForm(form_class):
+            roles = SelectMultipleField(
+                '所属角色',
+                choices=role_choices,
+                coerce=str,
+                widget=wtf_widgets.ListWidget(prefix_label=False),
+                option_widget=wtf_widgets.CheckboxInput(),
+                description='勾选拥有此权限的角色。',
+            )
+
+        return _BackendPermissionForm
 
     def edit_form(self, obj=None):
         form = super().edit_form(obj=obj)
-        if obj and obj.roles:
-            form.roles.process_data([str(r.id) for r in obj.roles])
+        if obj:
+            role_ids = [str(r.id) for r in obj.roles if r is not None]
+            if role_ids:
+                form.roles.process_data(role_ids)
         return form
 
     def on_model_change(self, form, model, is_created):
+        roles = []
         if form.roles.data:
-            model.roles = [
-                Models.Role.objects.get(id=ObjectId(rid))
-                for rid in form.roles.data
-            ]
-        else:
-            model.roles = []
+            for rid in form.roles.data:
+                try:
+                    roles.append(Models.Role.objects.get(id=ObjectId(rid)))
+                except Exception:
+                    continue
+        model.roles = roles
 
 
 class RoleView(MBModelView):
@@ -87,14 +98,20 @@ class RoleView(MBModelView):
     def scaffold_form(self):
         form_class = super().scaffold_form()
         menu_choices = self._build_menu_choices()
-        form_class.menu_permissions = SelectMultipleField(
-            '后台菜单权限',
-            choices=menu_choices,
-            widget=wtf_widgets.ListWidget(prefix_label=False),
-            option_widget=wtf_widgets.CheckboxInput(),
-            description='勾选该角色可访问的后台菜单模块。留空表示没有任何后台访问权限（仍可登录）。',
-        )
-        return form_class
+
+        # Create a subclass so that WTForms' FormMeta properly registers
+        # the menu_permissions field into _unbound_fields.  See
+        # BackendPermissionView for the detailed rationale.
+        class _RoleForm(form_class):
+            menu_permissions = SelectMultipleField(
+                '后台菜单权限',
+                choices=menu_choices,
+                widget=wtf_widgets.ListWidget(prefix_label=False),
+                option_widget=wtf_widgets.CheckboxInput(),
+                description='勾选该角色可访问的后台菜单模块。留空表示没有任何后台访问权限（仍可登录）。',
+            )
+
+        return _RoleForm
 
     def _build_menu_choices(self):
         """Collect all registered admin view names, prefixed by category."""
