@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from bson import ObjectId
+
 from wtforms import PasswordField
 from wtforms import SelectMultipleField, widgets as wtf_widgets
 
@@ -40,6 +42,39 @@ class LogView(MBModelView):
     form_labels = {
         'log_type': '日志类型',
     }
+
+
+class BackendPermissionView(MBModelView):
+    form_excluded_columns = ('roles',)
+    column_exclude_list = ('roles',)
+
+    def scaffold_form(self):
+        form_class = super().scaffold_form()
+        role_choices = [(str(r.id), r.name) for r in Models.Role.objects.all()]
+        form_class.roles = SelectMultipleField(
+            '所属角色',
+            choices=role_choices,
+            coerce=str,
+            widget=wtf_widgets.ListWidget(prefix_label=False),
+            option_widget=wtf_widgets.CheckboxInput(),
+            description='勾选拥有此权限的角色。',
+        )
+        return form_class
+
+    def edit_form(self, obj=None):
+        form = super().edit_form(obj=obj)
+        if obj and obj.roles:
+            form.roles.process_data([str(r.id) for r in obj.roles])
+        return form
+
+    def on_model_change(self, form, model, is_created):
+        if form.roles.data:
+            model.roles = [
+                Models.Role.objects.get(id=ObjectId(rid))
+                for rid in form.roles.data
+            ]
+        else:
+            model.roles = []
 
 
 class RoleView(MBModelView):
@@ -152,7 +187,7 @@ class SocialOAuthView(MBModelView):
 # ---------------------------------------------------------------------------
 
 admin.add_view(RoleView(Models.Role, category=CATEGORY_ZH['Admin'], name='角色'))
-admin.add_view(MBModelView(Models.BackendPermission, category=CATEGORY_ZH['Admin'], name='后台权限'))
+admin.add_view(BackendPermissionView(Models.BackendPermission, category=CATEGORY_ZH['Admin'], name='后台权限'))
 
 admin.add_view(UserView(Models.User, category=CATEGORY_ZH['User'], endpoint='usermodel', name='用户'))
 admin.add_view(SocialOAuthView(Models.SocialOAuth, category=CATEGORY_ZH['User'], name='社交登录'))
