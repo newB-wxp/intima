@@ -74,6 +74,7 @@ class BaseEntry(db.Document):
 class OrderEntry(BaseEntry):
     meta = {
         'db_alias': 'order_db',
+        'indexes': ['created_at'],
     }
 
     _item_snapshot = db.ReferenceField('ItemSnapshot') # store the info of the item when an order is produced

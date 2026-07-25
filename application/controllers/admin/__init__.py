@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+from functools import lru_cache
 
 from flask import redirect, url_for, request
 from flask_admin.contrib.mongoengine import ModelView
@@ -17,6 +18,15 @@ from .i18n import COMMON_LABELS, MODEL_LABELS, CATEGORY_ZH
 
 class Roled(object):
 
+    @staticmethod
+    @lru_cache(maxsize=32)
+    def _get_permission(name):
+        """Cached BackendPermission lookup.  Permission documents are tiny and
+        rarely change, yet ``is_accessible()`` queries them on every admin
+        page load.  LRU cache eliminates redundant round-trips to MongoDB.
+        Cache is keyed by permission name only (max 32 entries)."""
+        return Models.BackendPermission.objects(name=name).first()
+
     def is_accessible(self):
         if not current_user.is_authenticated:
             return False
@@ -24,8 +34,7 @@ class Roled(object):
             return True
 
         roles_accepted = getattr(self, '_permission', 'admin')
-        m = Models.BackendPermission.objects(
-            name=roles_accepted).first()
+        m = Roled._get_permission(roles_accepted)
         if m and m.roles:
             accessible = any(
                 [role in current_user.roles for role in m.roles]
@@ -134,19 +143,41 @@ class MBModelView(PermissionModelView):
 
     def get_list(self, page, sort_field, sort_desc, search, filters,
                  page_size=None):
+        # Fast path: unfiltered views with large collections avoid the
+        # expensive MongoDB count() (full collection scan) by using
+        # estimated_document_count() — an O(1) metadata lookup that may
+        # be off by ~0.1% but is acceptable for pagination display.
+        if not search and not filters:
+            try:
+                est = self.model.objects._collection.estimated_document_count()
+            except Exception:
+                est = 0
+            if est >= 1000:
+                page_size = page_size or self.page_size
+                query = self.model.objects
+                if sort_field:
+                    prefix = '-' if sort_desc else ''
+                    query = query.order_by('{}{}'.format(prefix, sort_field))
+                data = list(query.skip(page * page_size).limit(page_size))
+                if data:
+                    self._batch_prefetch_refs(data)
+                return est, data
+
         count, data = super(MBModelView, self).get_list(
             page, sort_field, sort_desc, search, filters, page_size)
 
-        if not data:
-            return count, data
+        if data:
+            self._batch_prefetch_refs(data)
 
-        # Batch pre-fetch all scalar ReferenceField values to avoid
-        # per-row lazy-load queries (N+1). We read from _data (raw DBRef)
-        # to avoid triggering the lazy load, then inject the pre-fetched
-        # object back into _data so subsequent getattr() finds it directly.
+        return count, data
+
+    def _batch_prefetch_refs(self, data):
+        """Batch pre-fetch all scalar ReferenceField values to avoid
+        per-row lazy-load queries (N+1).  Reads raw DBRef from ``_data``
+        to avoid triggering lazy load, then injects pre-fetched objects
+        back into ``_data`` so subsequent ``getattr()`` finds them directly."""
         refs, _ = self._detect_ref_fields()
         for field_name, ref_model in refs.items():
-            # Collect (ref_id, [rows]) mapping from raw _data
             rid_map = {}
             for row in data:
                 raw = row._data.get(field_name)
@@ -167,8 +198,6 @@ class MBModelView(PermissionModelView):
                 if obj is not None:
                     for row in rows:
                         row._data[field_name] = obj
-
-        return count, data
 
     # ------------------------------------------------------------------
     # Chinese label support
