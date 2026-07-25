@@ -29,8 +29,8 @@ class LogView(MBModelView):
     }
 
 
-admin.add_view(MBModelView(Models.BackendPermission, category=CATEGORY_ZH['Admin'], name='后台权限'))
 admin.add_view(MBModelView(Models.Role, category=CATEGORY_ZH['Admin'], name='角色'))
+admin.add_view(MBModelView(Models.BackendPermission, category=CATEGORY_ZH['Admin'], name='后台权限'))
 
 admin.add_view(UserView(Models.User, category=CATEGORY_ZH['User'], endpoint='usermodel', name='用户'))
 admin.add_view(MBModelView(Models.SocialOAuth, category=CATEGORY_ZH['User'], name='社交登录'))
