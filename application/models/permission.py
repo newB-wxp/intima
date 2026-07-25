@@ -22,6 +22,7 @@ class Role(db.Document):
     name = db.StringField(max_length=80, unique=True)
     description = db.StringField(max_length=255)
     password_hash = db.StringField(max_length=255)
+    menu_permissions = db.ListField(db.StringField())
 
     def set_password(self, password):
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')

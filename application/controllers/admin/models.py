@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from wtforms import PasswordField
+from wtforms import SelectMultipleField, widgets as wtf_widgets
 
 from flask_admin.babel import gettext
 from flask_admin.contrib.mongoengine.filters import BaseMongoEngineFilter
@@ -45,8 +46,34 @@ class RoleView(MBModelView):
     form_extra_fields = {
         'password': PasswordField('密码'),
     }
-    form_excluded_columns = ('password_hash',)
+    form_excluded_columns = ('password_hash', 'menu_permissions')
     column_exclude_list = ('password_hash',)
+
+    def scaffold_form(self):
+        form_class = super().scaffold_form()
+        menu_choices = self._build_menu_choices()
+        form_class.menu_permissions = SelectMultipleField(
+            '后台菜单权限',
+            choices=menu_choices,
+            widget=wtf_widgets.ListWidget(prefix_label=False),
+            option_widget=wtf_widgets.CheckboxInput(),
+            description='勾选该角色可访问的后台菜单模块。留空表示没有任何后台访问权限（仍可登录）。',
+        )
+        return form_class
+
+    def _build_menu_choices(self):
+        """Collect all registered admin view names, prefixed by category."""
+        from application.extensions import admin
+        choices = []
+        for view in admin._views:
+            name = view.name
+            category = getattr(view, '_category', None)
+            if category:
+                label = '[{}] {}'.format(category, name)
+            else:
+                label = name
+            choices.append((name, label))
+        return choices
 
     def on_model_change(self, form, model, is_created):
         if form.password.data:
