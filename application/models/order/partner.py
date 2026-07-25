@@ -86,6 +86,9 @@ class LogisticProvider(db.Document, WeightPrice):
 
 
 class Partner(db.Document):
+    meta = {
+        'indexes': ['name', 'auth'],
+    }
     name = db.StringField(unique=True)
     auth = db.StringField()
     _password = db.StringField()

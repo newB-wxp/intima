@@ -5,6 +5,9 @@ __all__ = ['Vendor']
 
 
 class Vendor(db.Document):
+    meta = {
+        'indexes': ['name'],
+    }
     name = db.StringField(required=True, unique=True)
     cn_name = db.StringField()
     logo = db.StringField()

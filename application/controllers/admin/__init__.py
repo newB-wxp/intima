@@ -65,6 +65,12 @@ class MBModelView(PermissionModelView):
         # to avoid massive N+1 queries on list view.
         self._optimize_ref_columns(model)
 
+        # Replace full objects.all() dropdowns with AJAX search for
+        # ReferenceField in create/edit forms.  This prevents the form
+        # from loading the entire referenced collection (thousands of
+        # Order / User / Post documents) into a <select> widget.
+        self._setup_form_ajax_refs(model)
+
         super(MBModelView, self).__init__(model, *args, **kwargs)
 
         # Translate category if in mapping
@@ -100,6 +106,31 @@ class MBModelView(PermissionModelView):
         if list_refs:
             existing = set(self.column_exclude_list or ())
             self.column_exclude_list = list(existing | set(list_refs.keys()))
+
+    def _setup_form_ajax_refs(self, model):
+        """Replace ReferenceField <select> dropdowns with AJAX-search widgets.
+
+        Without this, every ReferenceField in a create/edit form renders an
+        ``<select>`` containing *every* document from the referenced
+        collection (e.g. thousands of Orders / Users).  ``form_ajax_refs``
+        tells Flask-Admin to use a Select2 widget that lazy-loads results
+        via an AJAX endpoint instead.
+        """
+        refs, _ = self._detect_ref_fields(model=model)
+        if not refs:
+            return
+
+        # Build sensible default search fields per referenced model.
+        # Sub-classes can override by setting their own form_ajax_refs
+        # before calling super().__init__().
+        existing = dict(getattr(self, 'form_ajax_refs', {}) or {})
+        for field_name in refs:
+            if field_name in existing:
+                continue
+            existing[field_name] = {'fields': ['name', 'title', 'id']}
+
+        if existing:
+            self.form_ajax_refs = existing
 
     def get_list(self, page, sort_field, sort_desc, search, filters,
                  page_size=None):

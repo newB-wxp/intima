@@ -7,6 +7,9 @@ __all__ = ['Address']
 
 
 class Address(db.Document):
+    meta = {
+        'indexes': ['receiver', 'mobile_number'],
+    }
     created_at = db.DateTimeField(default=datetime.utcnow)
 
     # address detail

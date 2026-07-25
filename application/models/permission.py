@@ -16,6 +16,9 @@ class BackendPermission(db.Document):
 
 
 class Role(db.Document):
+    meta = {
+        'indexes': ['name'],
+    }
     name = db.StringField(max_length=80, unique=True)
     description = db.StringField(max_length=255)
     password_hash = db.StringField(max_length=255)
