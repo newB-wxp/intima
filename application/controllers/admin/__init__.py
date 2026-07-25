@@ -20,13 +20,24 @@ class Roled(object):
 
     @staticmethod
     @lru_cache(maxsize=32)
-    def _get_permission(name):
-        """Cached BackendPermission lookup — keyed by permission name
-        (max 32 entries).  Permission documents are tiny and rarely
-        change, yet ``is_accessible()`` queries them for every menu item
-        during page rendering.  LRU cache eliminates redundant MongoDB
-        round-trips."""
-        return Models.BackendPermission.objects(name=name).first()
+    def _get_allowed_menus(roles_tuple):
+        """Given a tuple of role name strings, return the union of
+        menu_items from all BackendPermission documents whose roles
+        intersect with the given roles.
+
+        Cached to avoid repeated MongoDB queries during menu rendering.
+        """
+        if not roles_tuple:
+            return frozenset()
+
+        role_names = set(roles_tuple)
+        allowed = set()
+        for bp in Models.BackendPermission.objects.all():
+            if bp.roles:
+                bp_role_names = {r.name for r in bp.roles if hasattr(r, 'name')}
+                if bp_role_names & role_names and bp.menu_items:
+                    allowed.update(bp.menu_items)
+        return frozenset(allowed)
 
     def is_accessible(self):
         if not current_user.is_authenticated:
@@ -34,13 +45,10 @@ class Roled(object):
         if 'ADMIN' in current_user.roles:
             return True
 
-        perm_name = getattr(self, '_permission', 'admin')
-        bp = Roled._get_permission(perm_name)
-        if bp and bp.roles:
-            role_names = {r.name for r in bp.roles if hasattr(r, 'name')}
-            if role_names & set(current_user.roles):
-                return True
-        return False
+        view_name = self.name
+        roles_tuple = tuple(sorted(current_user.roles))
+        allowed = Roled._get_allowed_menus(roles_tuple)
+        return view_name in allowed
 
     def _handle_view(self, name, *args, **kwargs):
         if not current_user.is_authenticated or not self.is_accessible():

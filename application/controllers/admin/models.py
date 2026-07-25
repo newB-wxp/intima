@@ -13,6 +13,21 @@ from . import MBModelView
 from .i18n import CATEGORY_ZH
 
 
+def _build_menu_choices():
+    """Collect all registered admin view names, prefixed by category."""
+    from application.extensions import admin
+    choices = []
+    for view in admin._views:
+        name = view.name
+        category = getattr(view, '_category', None)
+        if category:
+            label = '[{}] {}'.format(category, name)
+        else:
+            label = name
+        choices.append((name, label))
+    return choices
+
+
 class UserView(MBModelView):
     form_subdocuments = {
         'account': {
@@ -45,18 +60,14 @@ class LogView(MBModelView):
 
 
 class BackendPermissionView(MBModelView):
-    form_excluded_columns = ('roles',)
-    column_exclude_list = ('roles',)
+    form_excluded_columns = ('roles', 'menu_items')
+    column_exclude_list = ('roles', 'menu_items')
 
     def scaffold_form(self):
         form_class = super().scaffold_form()
         role_choices = [(str(r.id), r.name) for r in Models.Role.objects.all()]
+        menu_choices = _build_menu_choices()
 
-        # Create a subclass so that WTForms' FormMeta properly registers
-        # the roles field into _unbound_fields.  Monkey-patching
-        #   form_class.roles = SelectMultipleField(...)
-        # after class creation does NOT update _unbound_fields, causing
-        # the field to be invisible in render_form_fields().
         class _BackendPermissionForm(form_class):
             roles = SelectMultipleField(
                 '所属角色',
@@ -65,6 +76,13 @@ class BackendPermissionView(MBModelView):
                 widget=wtf_widgets.ListWidget(prefix_label=False),
                 option_widget=wtf_widgets.CheckboxInput(),
                 description='勾选拥有此权限的角色。',
+            )
+            menu_items = SelectMultipleField(
+                '可访问菜单',
+                choices=menu_choices,
+                widget=wtf_widgets.ListWidget(prefix_label=False),
+                option_widget=wtf_widgets.CheckboxInput(),
+                description='勾选此权限包允许访问的后台菜单模块。该权限包关联的角色登录后将只能看到被勾选的菜单。',
             )
 
         return _BackendPermissionForm
@@ -75,6 +93,8 @@ class BackendPermissionView(MBModelView):
             role_ids = [str(r.id) for r in obj.roles if r is not None]
             if role_ids:
                 form.roles.process_data(role_ids)
+            if obj.menu_items:
+                form.menu_items.process_data(obj.menu_items)
         return form
 
     def on_model_change(self, form, model, is_created):
@@ -86,6 +106,7 @@ class BackendPermissionView(MBModelView):
                 except Exception:
                     continue
         model.roles = roles
+        model.menu_items = form.menu_items.data or []
 
 
 class RoleView(MBModelView):
@@ -97,11 +118,8 @@ class RoleView(MBModelView):
 
     def scaffold_form(self):
         form_class = super().scaffold_form()
-        menu_choices = self._build_menu_choices()
+        menu_choices = _build_menu_choices()
 
-        # Create a subclass so that WTForms' FormMeta properly registers
-        # the menu_permissions field into _unbound_fields.  See
-        # BackendPermissionView for the detailed rationale.
         class _RoleForm(form_class):
             menu_permissions = SelectMultipleField(
                 '后台菜单权限',
@@ -112,20 +130,6 @@ class RoleView(MBModelView):
             )
 
         return _RoleForm
-
-    def _build_menu_choices(self):
-        """Collect all registered admin view names, prefixed by category."""
-        from application.extensions import admin
-        choices = []
-        for view in admin._views:
-            name = view.name
-            category = getattr(view, '_category', None)
-            if category:
-                label = '[{}] {}'.format(category, name)
-            else:
-                label = name
-            choices.append((name, label))
-        return choices
 
     def on_model_change(self, form, model, is_created):
         if form.password.data:

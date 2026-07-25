@@ -318,6 +318,7 @@ MODEL_LABELS = {
     'BackendPermission': {
         'name': '权限名称',
         'roles': '所属角色',
+        'menu_items': '可访问菜单',
     },
     'Role': {
         'name': '角色名称',

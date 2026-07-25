@@ -13,6 +13,7 @@ class BackendPermission(db.Document):
 
     name = db.StringField(required=True, unique=True)
     roles = db.ListField(db.ReferenceField('Role'))
+    menu_items = db.ListField(db.StringField())
 
 
 class Role(db.Document):
