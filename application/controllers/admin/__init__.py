@@ -24,10 +24,8 @@ class Roled(object):
             return True
 
         roles_accepted = getattr(self, '_permission', 'admin')
-        # Use .only('roles') to minimize data transfer —
-        # we only need the roles field for the permission check.
         m = Models.BackendPermission.objects(
-            name=roles_accepted).only('roles').first()
+            name=roles_accepted).first()
         if m and m.roles:
             accessible = any(
                 [role in current_user.roles for role in m.roles]
@@ -77,11 +75,17 @@ class MBModelView(PermissionModelView):
     # ReferenceField N+1 query optimizations
     # ------------------------------------------------------------------
 
-    def _detect_ref_fields(self):
-        """Return (scalar_refs, list_refs) where each is {field_name: model_cls}."""
+    def _detect_ref_fields(self, model=None):
+        """Return (scalar_refs, list_refs) where each is {field_name: model_cls}.
+
+        Accepts an optional ``model`` parameter to support calling before
+        ``super().__init__()`` has set ``self.model`` (during startup).
+        When omitted, falls back to ``self.model`` (available at runtime).
+        """
+        _model = model or self.model
         scalar = {}
         list_refs = {}
-        for name, field in self.model._fields.items():
+        for name, field in _model._fields.items():
             if isinstance(field, ReferenceField):
                 scalar[name] = field.document_type_obj
             elif (isinstance(field, ListField)
@@ -92,7 +96,7 @@ class MBModelView(PermissionModelView):
 
     def _optimize_ref_columns(self, model):
         """Auto-exclude ListField(ReferenceField) from column_list."""
-        _, list_refs = self._detect_ref_fields()
+        _, list_refs = self._detect_ref_fields(model=model)
         if list_refs:
             existing = set(self.column_exclude_list or ())
             self.column_exclude_list = list(existing | set(list_refs.keys()))
