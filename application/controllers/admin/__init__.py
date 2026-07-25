@@ -19,19 +19,14 @@ from .i18n import COMMON_LABELS, MODEL_LABELS, CATEGORY_ZH
 class Roled(object):
 
     @staticmethod
-    @lru_cache(maxsize=128)
-    def _get_user_menu_permissions(roles_tuple):
-        """Return the union of menu_permissions across all assigned Role
-        documents.  Cached by sorted role-name tuple (max 128 entries)
-        to avoid repeated MongoDB queries during menu rendering
-        (``is_accessible()`` is called for *every* menu item on every
-        page load)."""
-        roles = Models.Role.objects(name__in=list(roles_tuple))
-        perms = set()
-        for role in roles:
-            if role.menu_permissions:
-                perms.update(role.menu_permissions)
-        return perms
+    @lru_cache(maxsize=32)
+    def _get_permission(name):
+        """Cached BackendPermission lookup — keyed by permission name
+        (max 32 entries).  Permission documents are tiny and rarely
+        change, yet ``is_accessible()`` queries them for every menu item
+        during page rendering.  LRU cache eliminates redundant MongoDB
+        round-trips."""
+        return Models.BackendPermission.objects(name=name).first()
 
     def is_accessible(self):
         if not current_user.is_authenticated:
@@ -39,10 +34,13 @@ class Roled(object):
         if 'ADMIN' in current_user.roles:
             return True
 
-        view_name = self.name
-        roles_tuple = tuple(sorted(current_user.roles))
-        perms = Roled._get_user_menu_permissions(roles_tuple)
-        return view_name in perms
+        perm_name = getattr(self, '_permission', 'admin')
+        bp = Roled._get_permission(perm_name)
+        if bp and bp.roles:
+            role_names = {r.name for r in bp.roles if hasattr(r, 'name')}
+            if role_names & set(current_user.roles):
+                return True
+        return False
 
     def _handle_view(self, name, *args, **kwargs):
         if not current_user.is_authenticated or not self.is_accessible():
