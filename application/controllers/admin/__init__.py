@@ -7,6 +7,7 @@ from flask_admin import BaseView, expose, AdminIndexView
 from flask_admin.base import MenuLink
 from flask_babel import gettext as _
 from flask_login import current_user
+from mongoengine import ReferenceField, ListField
 
 import application.models as Models
 from application.utils import format_date
@@ -19,12 +20,14 @@ class Roled(object):
     def is_accessible(self):
         if not current_user.is_authenticated:
             return False
-        roles_accepted = getattr(self, '_permission', 'admin')
-
-        m = Models.BackendPermission.objects(
-            name=roles_accepted).first()
         if 'ADMIN' in current_user.roles:
             return True
+
+        roles_accepted = getattr(self, '_permission', 'admin')
+        # Use .only('roles') to minimize data transfer —
+        # we only need the roles field for the permission check.
+        m = Models.BackendPermission.objects(
+            name=roles_accepted).only('roles').first()
         if m and m.roles:
             accessible = any(
                 [role in current_user.roles for role in m.roles]
@@ -59,11 +62,82 @@ class MBModelView(PermissionModelView):
         # _refresh_cache (called inside super) picks up Chinese labels
         # when caching _list_columns via get_column_name.
         self._apply_zh_labels(model)
+
+        # Exclude heavy ListField(ReferenceField) from list columns
+        # to avoid massive N+1 queries on list view.
+        self._optimize_ref_columns(model)
+
         super(MBModelView, self).__init__(model, *args, **kwargs)
 
         # Translate category if in mapping
         if hasattr(self, '_category') and self._category in CATEGORY_ZH:
             self._category = CATEGORY_ZH[self._category]
+
+    # ------------------------------------------------------------------
+    # ReferenceField N+1 query optimizations
+    # ------------------------------------------------------------------
+
+    def _detect_ref_fields(self):
+        """Return (scalar_refs, list_refs) where each is {field_name: model_cls}."""
+        scalar = {}
+        list_refs = {}
+        for name, field in self.model._fields.items():
+            if isinstance(field, ReferenceField):
+                scalar[name] = field.document_type_obj
+            elif (isinstance(field, ListField)
+                  and hasattr(field, 'field')
+                  and isinstance(field.field, ReferenceField)):
+                list_refs[name] = field.field.document_type_obj
+        return scalar, list_refs
+
+    def _optimize_ref_columns(self, model):
+        """Auto-exclude ListField(ReferenceField) from column_list."""
+        _, list_refs = self._detect_ref_fields()
+        if list_refs:
+            existing = set(self.column_exclude_list or ())
+            self.column_exclude_list = list(existing | set(list_refs.keys()))
+
+    def get_list(self, page, sort_field, sort_desc, search, filters,
+                 page_size=None):
+        count, data = super(MBModelView, self).get_list(
+            page, sort_field, sort_desc, search, filters, page_size)
+
+        if not data:
+            return count, data
+
+        # Batch pre-fetch all scalar ReferenceField values to avoid
+        # per-row lazy-load queries (N+1). We read from _data (raw DBRef)
+        # to avoid triggering the lazy load, then inject the pre-fetched
+        # object back into _data so subsequent getattr() finds it directly.
+        refs, _ = self._detect_ref_fields()
+        for field_name, ref_model in refs.items():
+            # Collect (ref_id, [rows]) mapping from raw _data
+            rid_map = {}
+            for row in data:
+                raw = row._data.get(field_name)
+                if raw is not None:
+                    rid = raw.id if hasattr(raw, 'id') else raw
+                    rid_map.setdefault(rid, []).append(row)
+
+            if not rid_map:
+                continue
+
+            # Single batch query for all referenced objects
+            objects = list(ref_model.objects(id__in=list(rid_map.keys())))
+            obj_map = {str(obj.id): obj for obj in objects}
+
+            # Inject pre-fetched objects into _data to skip lazy load
+            for rid, rows in rid_map.items():
+                obj = obj_map.get(str(rid))
+                if obj is not None:
+                    for row in rows:
+                        row._data[field_name] = obj
+
+        return count, data
+
+    # ------------------------------------------------------------------
+    # Chinese label support
+    # ------------------------------------------------------------------
 
     def _apply_zh_labels(self, model):
         """Apply Chinese labels from i18n module — unconditional, no silent failure."""
