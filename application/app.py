@@ -197,6 +197,9 @@ def configure_template_filters(app):
     # Context processor: inject cart_count into all templates
     @app.context_processor
     def inject_cart_count():
+        # Skip admin pages — Cart query is irrelevant and wastes a DB round-trip
+        if request.path.startswith('/admin'):
+            return dict(cart_count=0)
         count = 0
         try:
             if (current_user and hasattr(current_user, 'is_authenticated')
@@ -237,10 +240,7 @@ def configure_logging(app):
 
 
 def configure_hook(app, name):
-
-    @app.before_request
-    def before_request():
-        pass
+    """Reserved for future request hooks (currently unused)."""
 
 
 def configure_error_handlers(app):
